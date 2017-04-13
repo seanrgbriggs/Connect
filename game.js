@@ -24,6 +24,89 @@ along with Perlenspiel. If not, see <http://www.gnu.org/licenses/>.
 /*jslint nomen: true, white: true */
 /*global PS */
 
+var Utils = {
+	GridIterator:function(xlen,ylen){
+		return {
+			x:0,y:0,
+			xlen:xlen,ylen:ylen,
+			isDone:function(){
+				return this.y >= this.ylen;
+			},
+			next:function(){
+				this.x++;
+				if(this.x >= this.xlen){
+					this.x=0;
+					this.y++;
+				}
+			}
+		};
+	}
+};
+
+var G = (function(){
+	var GRIDSIZE = 16;
+	var LEVELSIZE = 12;
+	var LEVELOFFSET = {x:2,y:2};
+
+	var levels = new Array();
+	var tileColorMap = (function(){
+		var map = new Map();
+		map.set("WALL", PS.COLOR_BLACK);	
+		map.set("PATH", PS.COLOR_WHITE);
+		return map;
+	}());
+
+	function Point(x, y, data){
+		return {x:x,y:y,data:data};
+	}
+
+	function Level(points){
+		var level = []; 
+		for(var i = 0; i < LEVELSIZE; i++){
+			level[i] = [];
+		}
+
+		for(var gi = Utils.GridIterator(LEVELSIZE, LEVELSIZE); !gi.isDone(); gi.next()){
+			var point = points.find(function(p){return p.x == gi.x && p.y == gi.y;});
+			if(point){
+				level[gi.y][gi.x] = point;
+			}else{
+				level[gi.y][gi.x] = new Point(gi.x, gi.y, {type:"WALL"});
+			}
+		}
+		return level;
+	}
+
+	function DrawLevel(level){
+		for(var gi = Utils.GridIterator(LEVELSIZE, LEVELSIZE); !gi.isDone(); gi.next()){
+			PS.color(gi.x + LEVELOFFSET.x, gi.y + LEVELOFFSET.y, tileColorMap.get(level[gi.y][gi.x].data.type));
+		}
+	}
+
+	var exports = {
+		constants:{
+			GRIDSIZE:GRIDSIZE,
+			LEVELSIZE:LEVELSIZE
+		},
+		levels:levels,
+		Level:Level,
+		Point:Point,
+		DrawLevel:DrawLevel
+	};
+	return exports;
+}());
+
+
+
+
+
+
+
+
+
+
+
+
 // This is a template for creating new Perlenspiel games
 
 // All of the functions below MUST exist, or the engine will complain!
@@ -43,7 +126,7 @@ PS.init = function( system, options ) {
 	// Do this FIRST to avoid problems!
 	// Otherwise you will get the default 8x8 grid
 
-	PS.gridSize( 8, 8 );
+	PS.gridSize( G.constants.GRIDSIZE, G.constants.GRIDSIZE );
 	
 	PS.gridColor( 0x303030 ); // Perlenspiel gray
 
@@ -51,6 +134,7 @@ PS.init = function( system, options ) {
 	PS.statusText( "Touch any bead" );
 
 	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
+	G.DrawLevel(G.Level([G.Point(3,3,{type:"PATH"})]));
 
 	// Add any other initialization code you need here
 };
@@ -72,14 +156,6 @@ PS.touch = function( x, y, data, options ) {
 	
 	// Change color of touched bed
 	// The default [data] is 0, which equals PS.COLOR_BLACK
-
-	PS.color( x, y, data ); // set color
-	if ( data === PS.COLOR_BLACK ) {
-		next = PS.COLOR_WHITE;
-	} else {
-		next = PS.COLOR_BLACK;
-	}
-	PS.data( x, y, next ); // remember color
 
 	// Play click sound
 
