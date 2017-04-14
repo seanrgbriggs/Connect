@@ -87,6 +87,9 @@ var G = (function(){
 			var y = gi.y + LEVELOFFSET.y;
 			PS.color(x, y, tileColorMap.get(level[gi.y][gi.x].data.type));
 			PS.data(x,y,level[gi.y][gi.x]);
+			if(level[gi.y][gi.x].data.type === "LIGHT"){
+				PS.radius(x, y, 50);
+			}
 		}
 		update(level);
 	}
@@ -108,6 +111,7 @@ var G = (function(){
 		return output;
 	}
 
+	/*
 	function update(level){
 		var lights = [].concat.apply([], level);
 		lights = lights.filter(function(p){return p.data.type === "LIGHT" && p.data.lightStrength === maxStrength;});
@@ -117,7 +121,7 @@ var G = (function(){
 				adj = adj.filter(function(p){return "PATH" === p.data.type || "LIGHT" === p.data.type;});
 
 				for(var j = 0; j < adj.length; j++){
-					if(level[adj.y][adj.x].type != "LIGHT" || level[adj.y][adj.x].data.lightStrength < adj.data.lightStrength){
+					if(level[adj.y][adj.x].data.type != "LIGHT"){
 						level[adj.y][adj.x] = new Point(adj.y, adj.x, {type:"LIGHT",lightStrength:(light.lightStrength - 1)});
 					
 						if(level[adj.y][adj.x].data.lightStrength > 0){
@@ -129,6 +133,38 @@ var G = (function(){
 			placeLights(lights[i]);
 		}
 	}
+	*/
+
+	function update(){
+		//iterate through all the squares in the level
+		var needToSpread = true;
+		while(needToSpread) {
+			needToSpread = false;
+            for (var i = LEVELOFFSET.x; i < GRIDSIZE - LEVELOFFSET.x; i++) {
+                for (var j = LEVELOFFSET.y; j < GRIDSIZE - LEVELOFFSET.y; j++) {
+                    //if it finds a light bead, spread to neighboring path bead
+                    if (PS.data(i, j).data.type === "LIGHT") {
+                        if (PS.color(i + 1, j) === tileColorMap.get("PATH")) {
+                            PS.color(i + 1, j, PS.COLOR_WHITE);
+                            needToSpread = true;
+                        }
+                        if (PS.color(i - 1, j) === tileColorMap.get("PATH")) {
+                            PS.color(i - 1, j, PS.COLOR_WHITE);
+                            needToSpread = true;
+                        }
+                        if (PS.color(i, j + 1) === tileColorMap.get("PATH")) {
+                            PS.color(i, j + 1, PS.COLOR_WHITE);
+                            needToSpread = true;
+                        }
+                        if (PS.color(i, j - 1) === tileColorMap.get("PATH")) {
+                            PS.color(i, j - 1, PS.COLOR_WHITE);
+                            needToSpread = true;
+                        }
+                    }
+                }
+            }
+        }
+	}
 
 	var exports = {
 		constants:{
@@ -137,6 +173,7 @@ var G = (function(){
 		},
 		currentLevel:currentLevel,
 		levels:levels,
+		update:update,
 		Level:Level,
 		Point:Point,
 		DrawLevel:DrawLevel
@@ -183,7 +220,8 @@ PS.init = function( system, options ) {
 
 	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
 	PS.border(PS.ALL, PS.ALL, 0);
-	G.currentLevel = (G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"VALVE"})]));
+	G.currentLevel = (G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"VALVE"}),
+        G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"})]));
  	G.DrawLevel(G.currentLevel);
 
 
@@ -212,7 +250,8 @@ PS.touch = function( x, y, data, options ) {
 	// Play click sound
 
 	if(data.data.type == "VALVE"){
-		data.data["sealed"] = !data.data["sealed"];
+		PS.color(x, y, 0x444444);
+		G.update();
 	}
 
 	PS.audioPlay( "fx_click" );
