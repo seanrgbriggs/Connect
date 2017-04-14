@@ -87,9 +87,6 @@ var G = (function(){
 			var y = gi.y + LEVELOFFSET.y;
 			PS.color(x, y, tileColorMap.get(level[gi.y][gi.x].data.type));
 			PS.data(x,y,level[gi.y][gi.x]);
-			if(level[gi.y][gi.x].data.type === "LIGHT"){
-				PS.radius(x, y, 50);
-			}
 		}
 		update(level);
 	}
@@ -164,6 +161,18 @@ var G = (function(){
                 }
             }
         }
+
+        //i know, it's awful
+		//check to see if the level has been completed
+		//level 1 completion
+		if(PS.color(11, 13) === PS.COLOR_WHITE){
+			level1 = level1b;
+			level2 = level2b;
+		}
+		//level 2 completion
+		if(PS.color(4, 2) === PS.COLOR_WHITE){
+			PS.debug("2");
+		}
 	}
 
 	var exports = {
@@ -191,7 +200,6 @@ var G = (function(){
 
 
 
-
 // This is a template for creating new Perlenspiel games
 
 // All of the functions below MUST exist, or the engine will complain!
@@ -202,6 +210,50 @@ var G = (function(){
 // where x and y are the desired initial dimensions of the grid
 // [system] = an object containing engine and platform information; see documentation for details
 // [options] = an object with optional parameters; see documentation for details
+
+//keep track if the level has been solved;
+var level1;
+var level2;
+
+var level1valves = 0;
+var level2valves = 0;
+
+//initial level
+var level1a = G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"VALVE"}),G.Point(3,1,{type:"PATH"}),
+    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
+    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"PATH"}),G.Point(9,3,{type:"VALVE"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
+    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
+    G.Point(9,11,{type:"PATH"}),
+    G.Point(2,11,{type:"PATH"}),G.Point(2,10,{type:"PATH"}),G.Point(2,9,{type:"PATH"}),G.Point(1,9,{type:"PATH"}),G.Point(0,9,{type:"PATH"})]);
+
+//solved initial level
+var level1b = G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
+    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
+    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"PATH"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
+    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
+    G.Point(9,11,{type:"PATH"}),
+    G.Point(2,11,{type:"PATH"}),G.Point(2,10,{type:"PATH"}),G.Point(2,9,{type:"PATH"}),G.Point(1,9,{type:"PATH"}),G.Point(0,9,{type:"PATH"})]);
+
+var level1c = G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
+    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
+    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"PATH"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
+    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
+    G.Point(9,11,{type:"PATH"}),
+    G.Point(2,11,{type:"LIGHT"}),G.Point(2,10,{type:"PATH"}),G.Point(2,9,{type:"PATH"}),G.Point(1,9,{type:"PATH"}),G.Point(0,9,{type:"PATH"})]);
+
+//initial second level, without starting light
+var level2a = G.Level([G.Point(9,0,{type:"PATH", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
+    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"VALVE"}),
+    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"VALVE"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
+    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
+    G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
+
+//initial seond level, with light
+var level2b = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
+    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"VALVE"}),
+    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"VALVE"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
+    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
+    G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
 
 PS.init = function( system, options ) {
 	"use strict";
@@ -220,8 +272,9 @@ PS.init = function( system, options ) {
 
 	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
 	PS.border(PS.ALL, PS.ALL, 0);
-	G.currentLevel = (G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"VALVE"}),G.Point(3,1,{type:"PATH"}),
-        G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"})]));
+	level1 = level1a;
+	level2 = level2a;
+	G.currentLevel = level1;
  	G.DrawLevel(G.currentLevel);
 
 
@@ -252,9 +305,9 @@ PS.touch = function( x, y, data, options ) {
 	if(data.data.type == "VALVE"){
 		PS.color(x, y, 0x444444);
 		G.update();
+        PS.audioPlay( "fx_click" );
 	}
 
-	PS.audioPlay( "fx_click" );
 
 	// Add code here for mouse clicks/touches over a bead
 };
@@ -341,6 +394,18 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 	//	PS.debug( "DOWN: key = " + key + ", shift = " + shift + "\n" );
 
 	// Add code here for when a key is pressed
+	//right
+	if(key === 1007){
+		PS.gridRefresh();
+		G.currentLevel = level2;
+		G.DrawLevel(G.currentLevel);
+	}
+	//left
+	else if(key === 1005){
+        PS.gridRefresh();
+		G.currentLevel = level1;
+        G.DrawLevel(G.currentLevel);
+	}
 };
 
 // PS.keyUp ( key, shift, ctrl, options )
