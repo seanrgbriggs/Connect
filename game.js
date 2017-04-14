@@ -172,6 +172,8 @@ var G = (function(){
 		//level 2 completion
 		if(PS.color(4, 2) === PS.COLOR_WHITE){
 			PS.debug("2");
+			level2 = level2c;
+			level1 = level1c;
 		}
 	}
 
@@ -215,9 +217,6 @@ var G = (function(){
 var level1;
 var level2;
 
-var level1valves = 0;
-var level2valves = 0;
-
 //initial level
 var level1a = G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"VALVE"}),G.Point(3,1,{type:"PATH"}),
     G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
@@ -252,6 +251,13 @@ var level2a = G.Level([G.Point(9,0,{type:"PATH", lightStrength:7}),G.Point(2,1,{
 var level2b = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
     G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"VALVE"}),
     G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"VALVE"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
+    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
+    G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
+
+//solved level 2
+var level2c = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
+    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
+    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"PATH"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
     G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
     G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
 
