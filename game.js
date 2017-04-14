@@ -83,33 +83,38 @@ var G = (function(){
 
 	function DrawLevel(level){
 		for(var gi = Utils.GridIterator(LEVELSIZE, LEVELSIZE); !gi.isDone(); gi.next()){
-			PS.color(gi.x + LEVELOFFSET.x, gi.y + LEVELOFFSET.y, tileColorMap.get(level[gi.y][gi.x].data.type));
+			var x = gi.x + LEVELOFFSET.x;
+			var y = gi.y + LEVELOFFSET.y;
+			PS.color(x, y, tileColorMap.get(level[gi.y][gi.x].data.type));
+			PS.data(x,y,level[gi.y][gi.x]);
 		}
+		update(level);
 	}
 
 	function getAdjacentPoints(point, level){
 		var output = [];
 		if(point.x > 0){
-			output.Add(level[point.y][point.x-1]);
+			output.push(level[point.y][point.x-1]);
 		}
 		if(point.y > 0){
-			output.Add(level[point.y-1][point.x]);
+			output.push(level[point.y-1][point.x]);
 		}
 		if(point.x < level.length - 1){
-			output.Add(level[point.y][point.x+1]);
+			output.push(level[point.y][point.x+1]);
 		}
 		if(point.y < level[0].length - 1){
-			output.Add(level[point.y+1][point.x]);
+			output.push(level[point.y+1][point.x]);
 		}
 		return output;
 	}
 
-	function update(){
-		var lights = currentLevel.filter(function(p){return p.data.type === "LIGHT" && p.data.lightStrength === maxStrength;});
+	function update(level){
+		var lights = [].concat.apply([], level);
+		lights = lights.filter(function(p){return p.data.type === "LIGHT" && p.data.lightStrength === maxStrength;});
 		for(var i = 0; i < lights.length; i++){
 			function placeLights(light){
-				var adj = getAdjacentPoints(light, currentLevel);
-				adj = adj.filter(function(p){return ["PATH","LIGHT"].find(p.data.type);});
+				var adj = getAdjacentPoints(light, level);
+				adj = adj.filter(function(p){return "PATH" === p.data.type || "LIGHT" === p.data.type;});
 
 				for(var j = 0; j < adj.length; j++){
 					if(level[adj.y][adj.x].type != "LIGHT" || level[adj.y][adj.x].data.lightStrength < adj.data.lightStrength){
@@ -121,8 +126,7 @@ var G = (function(){
 					}
 				}
 			}
-
-
+			placeLights(lights[i]);
 		}
 	}
 
@@ -131,6 +135,7 @@ var G = (function(){
 			GRIDSIZE:GRIDSIZE,
 			LEVELSIZE:LEVELSIZE
 		},
+		currentLevel:currentLevel,
 		levels:levels,
 		Level:Level,
 		Point:Point,
@@ -178,7 +183,8 @@ PS.init = function( system, options ) {
 
 	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
 	PS.border(PS.ALL, PS.ALL, 0);
-	G.DrawLevel(G.Level([G.Point(1,1,{type:"PATH"}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"VALVE"})]));
+	G.currentLevel = (G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"VALVE"})]));
+ 	G.DrawLevel(G.currentLevel);
 
 
 
