@@ -48,6 +48,8 @@ var G = (function(){
 	var LEVELSIZE = 12;
 	var LEVELOFFSET = {x:2,y:2};
 
+	var maxStrength = 7;
+	var currentLevel;
 	var levels = new Array();
 	var tileColorMap = (function(){
 		var map = new Map();
@@ -82,6 +84,45 @@ var G = (function(){
 	function DrawLevel(level){
 		for(var gi = Utils.GridIterator(LEVELSIZE, LEVELSIZE); !gi.isDone(); gi.next()){
 			PS.color(gi.x + LEVELOFFSET.x, gi.y + LEVELOFFSET.y, tileColorMap.get(level[gi.y][gi.x].data.type));
+		}
+	}
+
+	function getAdjacentPoints(point, level){
+		var output = [];
+		if(point.x > 0){
+			output.Add(level[point.y][point.x-1]);
+		}
+		if(point.y > 0){
+			output.Add(level[point.y-1][point.x]);
+		}
+		if(point.x < level.length - 1){
+			output.Add(level[point.y][point.x+1]);
+		}
+		if(point.y < level[0].length - 1){
+			output.Add(level[point.y+1][point.x]);
+		}
+		return output;
+	}
+
+	function update(){
+		var lights = currentLevel.filter(function(p){return p.data.type === "LIGHT" && p.data.lightStrength === maxStrength;});
+		for(var i = 0; i < lights.length; i++){
+			function placeLights(light){
+				var adj = getAdjacentPoints(light, currentLevel);
+				adj = adj.filter(function(p){return ["PATH","LIGHT"].find(p.data.type);});
+
+				for(var j = 0; j < adj.length; j++){
+					if(level[adj.y][adj.x].type != "LIGHT" || level[adj.y][adj.x].data.lightStrength < adj.data.lightStrength){
+						level[adj.y][adj.x] = new Point(adj.y, adj.x, {type:"LIGHT",lightStrength:(light.lightStrength - 1)});
+					
+						if(level[adj.y][adj.x].data.lightStrength > 0){
+							placeLights(adj);
+						}
+					}
+				}
+			}
+
+
 		}
 	}
 
@@ -163,6 +204,10 @@ PS.touch = function( x, y, data, options ) {
 	// The default [data] is 0, which equals PS.COLOR_BLACK
 
 	// Play click sound
+
+	if(data.data.type == "VALVE"){
+		data.data["sealed"] = !data.data["sealed"];
+	}
 
 	PS.audioPlay( "fx_click" );
 
