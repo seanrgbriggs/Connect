@@ -52,7 +52,9 @@ var G = (function(){
 	var tileColorMap = (function(){
 		var map = new Map();
 		map.set("WALL", PS.COLOR_BLACK);	
-		map.set("PATH", PS.COLOR_WHITE);
+		map.set("PATH", 0x444444);
+		map.set("VALVE", 0x888888);
+		map.set("LIGHT", PS.COLOR_WHITE);
 		return map;
 	}());
 
@@ -75,7 +77,7 @@ var G = (function(){
 			}
 		}
 		return level;
-	}
+		}
 
 	function DrawLevel(level){
 		for(var gi = Utils.GridIterator(LEVELSIZE, LEVELSIZE); !gi.isDone(); gi.next()){
@@ -134,7 +136,10 @@ PS.init = function( system, options ) {
 	PS.statusText( "Touch any bead" );
 
 	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
-	G.DrawLevel(G.Level([G.Point(3,3,{type:"PATH"})]));
+	PS.border(PS.ALL, PS.ALL, 0);
+	G.DrawLevel(G.Level([G.Point(1,1,{type:"PATH"}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"VALVE"})]));
+
+
 
 	// Add any other initialization code you need here
 };
