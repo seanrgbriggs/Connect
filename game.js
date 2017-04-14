@@ -143,7 +143,7 @@ var G = (function(){
             for (var i = LEVELOFFSET.x; i < GRIDSIZE - LEVELOFFSET.x; i++) {
                 for (var j = LEVELOFFSET.y; j < GRIDSIZE - LEVELOFFSET.y; j++) {
                     //if it finds a light bead, spread to neighboring path bead
-                    if (PS.data(i, j).data.type === "LIGHT") {
+                    if (PS.color(i, j) === PS.COLOR_WHITE) {
                         if (PS.color(i + 1, j) === tileColorMap.get("PATH")) {
                             PS.color(i + 1, j, PS.COLOR_WHITE);
                             needToSpread = true;
@@ -220,7 +220,7 @@ PS.init = function( system, options ) {
 
 	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
 	PS.border(PS.ALL, PS.ALL, 0);
-	G.currentLevel = (G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"VALVE"}),
+	G.currentLevel = (G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"VALVE"}),G.Point(3,1,{type:"PATH"}),
         G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"})]));
  	G.DrawLevel(G.currentLevel);
 
