@@ -165,13 +165,12 @@ var G = (function(){
         //i know, it's awful
 		//check to see if the level has been completed
 		//level 1 completion
-		if(PS.color(11, 13) === PS.COLOR_WHITE){
+		if(level1 === level1a && PS.color(11, 13) === PS.COLOR_WHITE){
 			level1 = level1b;
 			level2 = level2b;
 		}
 		//level 2 completion
 		if(PS.color(4, 2) === PS.COLOR_WHITE){
-			PS.debug("2");
 			level2 = level2c;
 			level1 = level1c;
 		}
@@ -257,7 +256,7 @@ var level2b = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,
 //solved level 2
 var level2c = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
     G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
-    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"PATH"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
+    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"VALVE"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
     G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
     G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
 
