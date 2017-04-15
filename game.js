@@ -253,6 +253,7 @@ var level2b = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,
     G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
     G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
 
+
 //solved level 2
 var level2c = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
     G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
