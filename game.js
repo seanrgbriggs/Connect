@@ -60,120 +60,10 @@ var G = (function(){
 		return map;
 	}());
 
-	function Point(x, y, data){
-		return {x:x,y:y,data:data};
-	}
-
-	function Level(points){
-		var level = []; 
-		for(var i = 0; i < LEVELSIZE; i++){
-			level[i] = [];
-		}
-
-		for(var gi = Utils.GridIterator(LEVELSIZE, LEVELSIZE); !gi.isDone(); gi.next()){
-			var point = points.find(function(p){return p.x == gi.x && p.y == gi.y;});
-			if(point){
-				level[gi.y][gi.x] = point;
-			}else{
-				level[gi.y][gi.x] = new Point(gi.x, gi.y, {type:"WALL"});
-			}
-		}
-		return level;
-		}
-
 	function DrawLevel(level){
-		for(var gi = Utils.GridIterator(LEVELSIZE, LEVELSIZE); !gi.isDone(); gi.next()){
-			var x = gi.x + LEVELOFFSET.x;
-			var y = gi.y + LEVELOFFSET.y;
-			PS.color(x, y, tileColorMap.get(level[gi.y][gi.x].data.type));
-			PS.data(x,y,level[gi.y][gi.x]);
-		}
-		update(level);
 	}
-
-	function getAdjacentPoints(point, level){
-		var output = [];
-		if(point.x > 0){
-			output.push(level[point.y][point.x-1]);
-		}
-		if(point.y > 0){
-			output.push(level[point.y-1][point.x]);
-		}
-		if(point.x < level.length - 1){
-			output.push(level[point.y][point.x+1]);
-		}
-		if(point.y < level[0].length - 1){
-			output.push(level[point.y+1][point.x]);
-		}
-		return output;
-	}
-
-	/*
-	function update(level){
-		var lights = [].concat.apply([], level);
-		lights = lights.filter(function(p){return p.data.type === "LIGHT" && p.data.lightStrength === maxStrength;});
-		for(var i = 0; i < lights.length; i++){
-			function placeLights(light){
-				var adj = getAdjacentPoints(light, level);
-				adj = adj.filter(function(p){return "PATH" === p.data.type || "LIGHT" === p.data.type;});
-
-				for(var j = 0; j < adj.length; j++){
-					if(level[adj.y][adj.x].data.type != "LIGHT"){
-						level[adj.y][adj.x] = new Point(adj.y, adj.x, {type:"LIGHT",lightStrength:(light.lightStrength - 1)});
-					
-						if(level[adj.y][adj.x].data.lightStrength > 0){
-							placeLights(adj);
-						}
-					}
-				}
-			}
-			placeLights(lights[i]);
-		}
-	}
-	*/
 
 	function update(){
-		//iterate through all the squares in the level
-		var needToSpread = true;
-		while(needToSpread) {
-			needToSpread = false;
-            for (var i = LEVELOFFSET.x; i < GRIDSIZE - LEVELOFFSET.x; i++) {
-                for (var j = LEVELOFFSET.y; j < GRIDSIZE - LEVELOFFSET.y; j++) {
-                    //if it finds a light bead, spread to neighboring path bead
-                    if (PS.color(i, j) === PS.COLOR_WHITE) {
-                        if (PS.color(i + 1, j) === tileColorMap.get("PATH")) {
-                            PS.color(i + 1, j, PS.COLOR_WHITE);
-                            needToSpread = true;
-                        }
-                        if (PS.color(i - 1, j) === tileColorMap.get("PATH")) {
-                            PS.color(i - 1, j, PS.COLOR_WHITE);
-                            needToSpread = true;
-                        }
-                        if (PS.color(i, j + 1) === tileColorMap.get("PATH")) {
-                            PS.color(i, j + 1, PS.COLOR_WHITE);
-                            needToSpread = true;
-                        }
-                        if (PS.color(i, j - 1) === tileColorMap.get("PATH")) {
-                            PS.color(i, j - 1, PS.COLOR_WHITE);
-                            needToSpread = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        //i know, it's awful
-		//check to see if the level has been completed
-		//level 1 completion
-		if(level1 === level1a && PS.color(11, 13) === PS.COLOR_WHITE){
-			level1 = level1b;
-			level2 = level2b;
-		}
-		//level 2 completion
-		if(PS.color(4, 2) === PS.COLOR_WHITE){
-			level2 = level2c;
-			level1 = level1c;
-		}
 	}
 
 	var exports = {
@@ -184,8 +74,6 @@ var G = (function(){
 		currentLevel:currentLevel,
 		levels:levels,
 		update:update,
-		Level:Level,
-		Point:Point,
 		DrawLevel:DrawLevel
 	};
 	return exports;
@@ -212,54 +100,6 @@ var G = (function(){
 // [system] = an object containing engine and platform information; see documentation for details
 // [options] = an object with optional parameters; see documentation for details
 
-//keep track if the level has been solved;
-var level1;
-var level2;
-
-//initial level
-var level1a = G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"VALVE"}),G.Point(3,1,{type:"PATH"}),
-    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
-    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"PATH"}),G.Point(9,3,{type:"VALVE"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
-    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
-    G.Point(9,11,{type:"PATH"}),
-    G.Point(2,11,{type:"PATH"}),G.Point(2,10,{type:"PATH"}),G.Point(2,9,{type:"PATH"}),G.Point(1,9,{type:"PATH"}),G.Point(0,9,{type:"PATH"})]);
-
-//solved initial level
-var level1b = G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
-    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
-    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"PATH"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
-    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
-    G.Point(9,11,{type:"PATH"}),
-    G.Point(2,11,{type:"PATH"}),G.Point(2,10,{type:"PATH"}),G.Point(2,9,{type:"PATH"}),G.Point(1,9,{type:"PATH"}),G.Point(0,9,{type:"PATH"})]);
-
-var level1c = G.Level([G.Point(1,1,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
-    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
-    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"PATH"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
-    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
-    G.Point(9,11,{type:"PATH"}),
-    G.Point(2,11,{type:"LIGHT"}),G.Point(2,10,{type:"PATH"}),G.Point(2,9,{type:"PATH"}),G.Point(1,9,{type:"PATH"}),G.Point(0,9,{type:"PATH"})]);
-
-//initial second level, without starting light
-var level2a = G.Level([G.Point(9,0,{type:"PATH", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
-    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"VALVE"}),
-    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"VALVE"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
-    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
-    G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
-
-//initial seond level, with light
-var level2b = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
-    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"VALVE"}),
-    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"VALVE"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
-    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
-    G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
-
-
-//solved level 2
-var level2c = G.Level([G.Point(9,0,{type:"LIGHT", lightStrength:7}),G.Point(2,1,{type:"PATH"}),G.Point(3,1,{type:"PATH"}),
-    G.Point(4,1,{type:"PATH"}),G.Point(5,1,{type:"PATH"}),G.Point(6,1,{type:"PATH"}),G.Point(7,1,{type:"PATH"}),G.Point(8,1,{type:"PATH"}),
-    G.Point(9,1,{type:"PATH"}),G.Point(9,2,{type:"VALVE"}),G.Point(9,3,{type:"PATH"}),G.Point(9,4,{type:"PATH"}),G.Point(9,5,{type:"PATH"}),
-    G.Point(9,6,{type:"PATH"}),G.Point(9,7,{type:"PATH"}),G.Point(9,8,{type:"PATH"}),G.Point(9,9,{type:"PATH"}),G.Point(9,10,{type:"PATH"}),
-    G.Point(9,11,{type:"PATH"}),G.Point(2,0,{type:"PATH"})]);
 
 PS.init = function( system, options ) {
 	"use strict";
@@ -277,11 +117,6 @@ PS.init = function( system, options ) {
 	PS.statusText( "Touch any bead" );
 
 	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
-	PS.border(PS.ALL, PS.ALL, 0);
-	level1 = level1a;
-	level2 = level2a;
-	G.currentLevel = level1;
- 	G.DrawLevel(G.currentLevel);
 
 
 
@@ -307,12 +142,7 @@ PS.touch = function( x, y, data, options ) {
 	// The default [data] is 0, which equals PS.COLOR_BLACK
 
 	// Play click sound
-
-	if(data.data.type == "VALVE"){
-		PS.color(x, y, 0x444444);
-		G.update();
-        PS.audioPlay( "fx_click" );
-	}
+    PS.audioPlay( "fx_click" );
 
 
 	// Add code here for mouse clicks/touches over a bead
@@ -400,18 +230,6 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 	//	PS.debug( "DOWN: key = " + key + ", shift = " + shift + "\n" );
 
 	// Add code here for when a key is pressed
-	//right
-	if(key === 1007){
-		PS.gridRefresh();
-		G.currentLevel = level2;
-		G.DrawLevel(G.currentLevel);
-	}
-	//left
-	else if(key === 1005){
-        PS.gridRefresh();
-		G.currentLevel = level1;
-        G.DrawLevel(G.currentLevel);
-	}
 };
 
 // PS.keyUp ( key, shift, ctrl, options )
