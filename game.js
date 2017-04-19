@@ -50,6 +50,16 @@ var G = (function(){
 
 	var MAXSTRENGTH = 7;
 	var currentLevel;
+
+    var tileColorMap = (function(){
+        var map = new Map();
+        map.set("WALL", PS.COLOR_BLACK);
+        map.set("PATH", 0x444444);
+        map.set("VALVE", 0x888888);
+        map.set("LIGHT", PS.COLOR_WHITE);
+        return map;
+    }());
+
 	//levels are 2d arrays, though js does not support 2d array, so using array of arrays
 	//examples:
 	/*
@@ -58,7 +68,7 @@ var G = (function(){
 	 */
 	//level0, or the starting level
 	var level0 = [[],[],[],[],[],[],[],[],[],[],[],[]];
-	level0[1][5] = {type:"PATH", lightStrength:0};
+	level0[1][5] = {type:"LIGHT", lightStrength:0};
     level0[2][5] = {type:"PATH", lightStrength:0};
     level0[3][5] = {type:"PATH", lightStrength:0};
     level0[4][5] = {type:"PATH", lightStrength:0};
@@ -67,18 +77,10 @@ var G = (function(){
     level0[7][5] = {type:"PATH", lightStrength:0};
     level0[8][5] = {type:"PATH", lightStrength:0};
     level0[9][5] = {type:"PATH", lightStrength:0};
-    level0[10][5] = {type:"PATH", lightStrength:0};
+    level0[10][5] = {type:"LIGHT", lightStrength:0};
 
 	//array containing all of the levels
 	var levels = [level0];
-	var tileColorMap = (function(){
-		var map = new Map();
-		map.set("WALL", PS.COLOR_BLACK);
-		map.set("PATH", 0x444444);
-		map.set("VALVE", 0x888888);
-		map.set("LIGHT", PS.COLOR_WHITE);
-		return map;
-	}());
 
 	//draws the specified level
 	function drawLevel(level){
@@ -91,6 +93,10 @@ var G = (function(){
 				if(currentLevel[i][j]){
 					PS.color(LEVELOFFSET.x + i, LEVELOFFSET.y + j, tileColorMap.get(currentLevel[i][j].type));
                     PS.data(LEVELOFFSET.x + i, LEVELOFFSET.y + j, currentLevel[i][j].type);
+                    //if the bead is a light bead, set it to illuminate after level load
+                    if(currentLevel[i][j].type === "LIGHT"){
+                        setTimeout(illuminate, 1000, i, j);
+					}
 				}
 				//else make it black
 				else {
@@ -98,17 +104,18 @@ var G = (function(){
                 }
             }
 		}
-		illuminate();
 	}
 
 	//shallow copy, meaning that you can manipulate currentLevel, and the state will be saved
-	function illuminate(){
+	//
+	function illuminate(x, y){
 		/*
 		PS.debug(currentLevel[1][5].type+"\n");
 		currentLevel[1][5].type = "no";
 		PS.debug(currentLevel[1][5].type+"\n");
 		PS.debug(level0[1][5].type+"\n");
 		*/
+		PS.debug(x + ", " + y + "\n");
 	}
 
 	function update(){
