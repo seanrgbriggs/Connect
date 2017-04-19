@@ -50,17 +50,41 @@ var G = (function(){
 
 	var maxStrength = 7;
 	var currentLevel;
-	var levels = new Array();
+	//levels are 2d arrays, though js does not support 2d array, so using array of arrays
+	//level0, or the starting level
+	var level0 = [[],[],[],[],[],[],[],[],[],[],[],[]];
+	level0[1][1] = {type:"PATH", lightStrength:0};
+	level0[2][1] = {type:"PATH", lightStrength:0};
+
+	//array containing all of the levels
+	var levels = [level0];
 	var tileColorMap = (function(){
 		var map = new Map();
-		map.set("WALL", PS.COLOR_BLACK);	
+		map.set("WALL", PS.COLOR_BLACK);
 		map.set("PATH", 0x444444);
 		map.set("VALVE", 0x888888);
 		map.set("LIGHT", PS.COLOR_WHITE);
 		return map;
 	}());
 
-	function DrawLevel(level){
+	//draws the specified level
+	function drawLevel(level){
+		var currentLevel = levels[level];
+
+		//draw every bead of the level
+		for(var i = 0; i < LEVELSIZE; i++){
+			for(var j = 0; j < LEVELSIZE; j++) {
+				//if there is data there then draw, the correct thing
+				if(currentLevel[i][j]){
+					PS.color(LEVELOFFSET.x + i, LEVELOFFSET.y + j, tileColorMap.get(currentLevel[i][j].type));
+                    PS.data(LEVELOFFSET.x + i, LEVELOFFSET.y + j, currentLevel[i][j].type);
+				}
+				//else make it black
+				else {
+                    PS.color(LEVELOFFSET.x + i, LEVELOFFSET.y + j, tileColorMap.get("WALL"));
+                }
+            }
+		}
 	}
 
 	function update(){
@@ -74,19 +98,10 @@ var G = (function(){
 		currentLevel:currentLevel,
 		levels:levels,
 		update:update,
-		DrawLevel:DrawLevel
+		DrawLevel:drawLevel
 	};
 	return exports;
 }());
-
-
-
-
-
-
-
-
-
 
 
 // This is a template for creating new Perlenspiel games
@@ -109,15 +124,16 @@ PS.init = function( system, options ) {
 	// Do this FIRST to avoid problems!
 	// Otherwise you will get the default 8x8 grid
 
-	PS.gridSize( G.constants.GRIDSIZE, G.constants.GRIDSIZE );
+	PS.gridSize(G.constants.GRIDSIZE, G.constants.GRIDSIZE );
 	
-	PS.gridColor( 0x303030 ); // Perlenspiel gray
+	PS.gridColor(0x303030); // Perlenspiel gray
+	PS.border(PS.ALL, PS.ALL, 0);
 
-	PS.statusColor( PS.COLOR_WHITE );
-	PS.statusText( "Touch any bead" );
+	PS.statusColor(PS.COLOR_WHITE);
+	PS.statusText("Touch any bead");
 
-	PS.audioLoad( "fx_click", { lock: true } ); // load & lock click sound
-
+	PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
+	G.DrawLevel(0);
 
 
 	// Add any other initialization code you need here
