@@ -116,8 +116,6 @@ var G = (function(){
 		PS.debug(currentLevel[1][5].type+"\n");
 		PS.debug(level0[1][5].type+"\n");
 		*/
-		PS.debug(x + ", " + y + "\n");
-		PS.debug(PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y).lightStrength+"\n");
 		//illuminate to the right
 		var strength = PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y).lightStrength;
 		if(PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength < strength - 1){
@@ -125,9 +123,8 @@ var G = (function(){
             PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength = strength - 1;
             //this is where it assigns the color
 			PS.color(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y,
-				0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength) * 0x101010);
-			//map.get(color)+lightstrength*0x101010 ??
-			illuminate(x+1, y);
+				0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength) * 0x1C1C1C);
+			setTimeout(illuminate, 100, x+1, y);
 		}
 	}
 
