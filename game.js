@@ -48,13 +48,26 @@ var G = (function(){
 	var LEVELSIZE = 12;
 	var LEVELOFFSET = {x:2,y:2};
 
-	var maxStrength = 7;
+	var MAXSTRENGTH = 7;
 	var currentLevel;
 	//levels are 2d arrays, though js does not support 2d array, so using array of arrays
+	//examples:
+	/*
+	var levelX = [[],[],[],[],[],[],[],[],[],[],[],[]];
+	levelX[x][y] = {type:"PATH", lightStrength:0};
+	 */
 	//level0, or the starting level
 	var level0 = [[],[],[],[],[],[],[],[],[],[],[],[]];
-	level0[1][1] = {type:"PATH", lightStrength:0};
-	level0[2][1] = {type:"PATH", lightStrength:0};
+	level0[1][5] = {type:"PATH", lightStrength:0};
+    level0[2][5] = {type:"PATH", lightStrength:0};
+    level0[3][5] = {type:"PATH", lightStrength:0};
+    level0[4][5] = {type:"PATH", lightStrength:0};
+    level0[5][5] = {type:"PATH", lightStrength:0};
+    level0[6][5] = {type:"PATH", lightStrength:0};
+    level0[7][5] = {type:"PATH", lightStrength:0};
+    level0[8][5] = {type:"PATH", lightStrength:0};
+    level0[9][5] = {type:"PATH", lightStrength:0};
+    level0[10][5] = {type:"PATH", lightStrength:0};
 
 	//array containing all of the levels
 	var levels = [level0];
@@ -69,7 +82,7 @@ var G = (function(){
 
 	//draws the specified level
 	function drawLevel(level){
-		var currentLevel = levels[level];
+		currentLevel = levels[level];
 
 		//draw every bead of the level
 		for(var i = 0; i < LEVELSIZE; i++){
@@ -85,6 +98,17 @@ var G = (function(){
                 }
             }
 		}
+		illuminate();
+	}
+
+	//shallow copy, meaning that you can manipulate currentLevel, and the state will be saved
+	function illuminate(){
+		/*
+		PS.debug(currentLevel[1][5].type+"\n");
+		currentLevel[1][5].type = "no";
+		PS.debug(currentLevel[1][5].type+"\n");
+		PS.debug(level0[1][5].type+"\n");
+		*/
 	}
 
 	function update(){
