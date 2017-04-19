@@ -68,7 +68,7 @@ var G = (function(){
 	 */
 	//level0, or the starting level
 	var level0 = [[],[],[],[],[],[],[],[],[],[],[],[]];
-	level0[1][5] = {type:"LIGHT", lightStrength:0};
+	level0[1][5] = {type:"LIGHT", lightStrength:MAXSTRENGTH};
     level0[2][5] = {type:"PATH", lightStrength:0};
     level0[3][5] = {type:"PATH", lightStrength:0};
     level0[4][5] = {type:"PATH", lightStrength:0};
@@ -77,7 +77,7 @@ var G = (function(){
     level0[7][5] = {type:"PATH", lightStrength:0};
     level0[8][5] = {type:"PATH", lightStrength:0};
     level0[9][5] = {type:"PATH", lightStrength:0};
-    level0[10][5] = {type:"LIGHT", lightStrength:0};
+    level0[10][5] = {type:"LIGHT", lightStrength:MAXSTRENGTH};
 
 	//array containing all of the levels
 	var levels = [level0];
@@ -90,10 +90,11 @@ var G = (function(){
 		for(var i = 0; i < LEVELSIZE; i++){
 			for(var j = 0; j < LEVELSIZE; j++) {
 				//if there is data there then draw, the correct thing
+				//also put in the data for the data field
 				if(currentLevel[i][j]){
 					PS.color(LEVELOFFSET.x + i, LEVELOFFSET.y + j, tileColorMap.get(currentLevel[i][j].type));
-                    PS.data(LEVELOFFSET.x + i, LEVELOFFSET.y + j, currentLevel[i][j].type);
-                    //if the bead is a light bead, set it to illuminate after level load
+                    PS.data(LEVELOFFSET.x + i, LEVELOFFSET.y + j, currentLevel[i][j]);
+                    //if the bead is a light bead, set it to illuminate after level loads
                     if(currentLevel[i][j].type === "LIGHT"){
                         setTimeout(illuminate, 1000, i, j);
 					}
@@ -107,7 +108,7 @@ var G = (function(){
 	}
 
 	//shallow copy, meaning that you can manipulate currentLevel, and the state will be saved
-	//
+	//given a bead location, will illuminate those around it an recursively call itself until all is lit
 	function illuminate(x, y){
 		/*
 		PS.debug(currentLevel[1][5].type+"\n");
@@ -116,6 +117,18 @@ var G = (function(){
 		PS.debug(level0[1][5].type+"\n");
 		*/
 		PS.debug(x + ", " + y + "\n");
+		PS.debug(PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y).lightStrength+"\n");
+		//illuminate to the right
+		var strength = PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y).lightStrength;
+		if(PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength < strength - 1){
+			//set the bead light strength and change the beads color
+            PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength = strength - 1;
+            //this is where it assigns the color
+			PS.color(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y,
+				0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength) * 0x101010);
+			//map.get(color)+lightstrength*0x101010 ??
+			illuminate(x+1, y);
+		}
 	}
 
 	function update(){
