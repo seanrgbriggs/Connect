@@ -60,6 +60,18 @@ var G = (function(){
 		return map;
 	}());
 
+	var tileOnClickMap = (function () {
+		var map = new Map();
+		map.set("VALVE", function () {
+			if(PS.border(this.x, this.y) === 0){
+                PS.border(this.x, this.y, 5);
+			}else{
+				PS.border(this.x, this.y, 0);
+			}
+        });
+		return map;
+    }());
+
 	function Point(x, y, data){
 		return {x:x,y:y,data:data};
 	}
@@ -79,14 +91,23 @@ var G = (function(){
 			}
 		}
 		return level;
-		}
+	}
 
 	function DrawLevel(level){
 		for(var gi = Utils.GridIterator(LEVELSIZE, LEVELSIZE); !gi.isDone(); gi.next()){
 			var x = gi.x + LEVELOFFSET.x;
 			var y = gi.y + LEVELOFFSET.y;
 			PS.color(x, y, tileColorMap.get(level[gi.y][gi.x].data.type));
-			PS.data(x,y,level[gi.y][gi.x]);
+
+			var dataUpdated = level[gi.y][gi.x];
+			dataUpdated[x]=x;
+			dataUpdated[y]=y;
+			if(level[gi.y][gi.x].hasOwnProperty("type")){
+				if(tileOnClickMap.hasOwnProperty(level[gi.y][gi.x].type)){
+					dataUpdated['onClick']=tileOnClickMap(level[gi.y][gi.x].type);
+				}
+			}
+			PS.data(x,y,dataUpdated);
 		}
 		update(level);
 	}
