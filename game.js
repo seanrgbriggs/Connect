@@ -78,6 +78,54 @@ var G = (function(){
     level0[8][5] = {type:"PATH", lightStrength:0};
     level0[9][5] = {type:"PATH", lightStrength:0};
     level0[10][5] = {type:"LIGHT", lightStrength:MAXSTRENGTH};
+    level0[2][4] = {type:"PATH", lightStrength:0};
+    level0[3][4] = {type:"PATH", lightStrength:0};
+    level0[4][4] = {type:"PATH", lightStrength:0};
+    level0[5][4] = {type:"PATH", lightStrength:0};
+    level0[6][4] = {type:"PATH", lightStrength:0};
+    level0[7][4] = {type:"PATH", lightStrength:0};
+    level0[8][4] = {type:"PATH", lightStrength:0};
+    level0[9][4] = {type:"PATH", lightStrength:0};
+    level0[2][3] = {type:"PATH", lightStrength:0};
+    level0[3][3] = {type:"PATH", lightStrength:0};
+    level0[4][3] = {type:"PATH", lightStrength:0};
+    level0[5][3] = {type:"PATH", lightStrength:0};
+    level0[6][3] = {type:"PATH", lightStrength:0};
+    level0[7][3] = {type:"PATH", lightStrength:0};
+    level0[8][3] = {type:"PATH", lightStrength:0};
+    level0[9][3] = {type:"PATH", lightStrength:0};
+    level0[2][2] = {type:"PATH", lightStrength:0};
+    level0[3][2] = {type:"PATH", lightStrength:0};
+    level0[4][2] = {type:"PATH", lightStrength:0};
+    level0[5][2] = {type:"PATH", lightStrength:0};
+    level0[6][2] = {type:"PATH", lightStrength:0};
+    level0[7][2] = {type:"PATH", lightStrength:0};
+    level0[8][2] = {type:"PATH", lightStrength:0};
+    level0[9][2] = {type:"PATH", lightStrength:0};
+    level0[2][6] = {type:"PATH", lightStrength:0};
+    level0[3][6] = {type:"PATH", lightStrength:0};
+    level0[4][6] = {type:"PATH", lightStrength:0};
+    level0[5][6] = {type:"PATH", lightStrength:0};
+    level0[6][6] = {type:"PATH", lightStrength:0};
+    level0[7][6] = {type:"PATH", lightStrength:0};
+    level0[8][6] = {type:"PATH", lightStrength:0};
+    level0[9][6] = {type:"PATH", lightStrength:0};
+    level0[2][7] = {type:"PATH", lightStrength:0};
+    level0[3][7] = {type:"PATH", lightStrength:0};
+    level0[4][7] = {type:"PATH", lightStrength:0};
+    level0[5][7] = {type:"PATH", lightStrength:0};
+    level0[6][7] = {type:"PATH", lightStrength:0};
+    level0[7][7] = {type:"PATH", lightStrength:0};
+    level0[8][7] = {type:"PATH", lightStrength:0};
+    level0[9][7] = {type:"PATH", lightStrength:0};
+    level0[2][8] = {type:"PATH", lightStrength:0};
+    level0[3][8] = {type:"PATH", lightStrength:0};
+    level0[4][8] = {type:"PATH", lightStrength:0};
+    level0[5][8] = {type:"PATH", lightStrength:0};
+    level0[6][8] = {type:"PATH", lightStrength:0};
+    level0[7][8] = {type:"PATH", lightStrength:0};
+    level0[8][8] = {type:"PATH", lightStrength:0};
+    level0[9][8] = {type:"PATH", lightStrength:0};
 
 	//array containing all of the levels
 	var levels = [level0];
@@ -110,22 +158,48 @@ var G = (function(){
 	//shallow copy, meaning that you can manipulate currentLevel, and the state will be saved
 	//given a bead location, will illuminate those around it an recursively call itself until all is lit
 	function illuminate(x, y){
-		/*
-		PS.debug(currentLevel[1][5].type+"\n");
-		currentLevel[1][5].type = "no";
-		PS.debug(currentLevel[1][5].type+"\n");
-		PS.debug(level0[1][5].type+"\n");
-		*/
 		//illuminate to the right
 		var strength = PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y).lightStrength;
+		//do this to the right
 		if(PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength < strength - 1){
 			//set the bead light strength and change the beads color
             PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength = strength - 1;
+            currentLevel[x+1][y].lightStrength = strength - 1;
             //this is where it assigns the color
 			PS.color(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y,
 				0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength) * 0x1C1C1C);
 			setTimeout(illuminate, 100, x+1, y);
 		}
+        //do this to the left
+        if(PS.data(LEVELOFFSET.x + x - 1, LEVELOFFSET.y + y).lightStrength < strength - 1){
+            //set the bead light strength and change the beads color
+            PS.data(LEVELOFFSET.x + x - 1, LEVELOFFSET.y + y).lightStrength = strength - 1;
+            currentLevel[x-1][y].lightStrength = strength - 1;
+            //this is where it assigns the color
+            PS.color(LEVELOFFSET.x + x - 1, LEVELOFFSET.y + y,
+                0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x - 1, LEVELOFFSET.y + y).lightStrength) * 0x1C1C1C);
+            setTimeout(illuminate, 100, x-1, y);
+        }
+        //do this to the top
+        if(PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y - 1).lightStrength < strength - 1){
+            //set the bead light strength and change the beads color
+            PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y - 1).lightStrength = strength - 1;
+            currentLevel[x][y-1].lightStrength = strength - 1;
+            //this is where it assigns the color
+            PS.color(LEVELOFFSET.x + x, LEVELOFFSET.y + y - 1,
+                0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y - 1).lightStrength) * 0x1C1C1C);
+            setTimeout(illuminate, 100, x, y-1);
+        }
+        //do this to the botton
+        if(PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y + 1).lightStrength < strength - 1){
+            //set the bead light strength and change the beads color
+            PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y + 1).lightStrength = strength - 1;
+            currentLevel[x][y+1].lightStrength = strength - 1;
+            //this is where it assigns the color
+            PS.color(LEVELOFFSET.x + x, LEVELOFFSET.y + y + 1,
+                0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y + 1).lightStrength) * 0x1C1C1C);
+            setTimeout(illuminate, 100, x, y+1);
+        }
 	}
 
 	function update(){
