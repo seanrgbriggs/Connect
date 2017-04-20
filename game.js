@@ -69,7 +69,7 @@ var G = (function(){
 	//level0, or the starting level
 	var level0 = [[],[],[],[],[],[],[],[],[],[],[],[]];
 	level0[1][5] = {type:"LIGHT", lightStrength:MAXSTRENGTH};
-    level0[2][5] = {type:"PATH", lightStrength:0};
+    level0[2][5] = {type:"VALVE", lightStrength:0};
     level0[3][5] = {type:"PATH", lightStrength:0};
     level0[4][5] = {type:"PATH", lightStrength:0};
     level0[5][5] = {type:"PATH", lightStrength:0};
@@ -160,46 +160,22 @@ var G = (function(){
 	function illuminate(x, y){
 		//illuminate to the right
 		var strength = PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y).lightStrength;
-		//do this to the right
-		if(PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength < strength - 1){
-			//set the bead light strength and change the beads color
-            PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength = strength - 1;
-            currentLevel[x+1][y].lightStrength = strength - 1;
-            //this is where it assigns the color
-			PS.color(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y,
-				0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x + 1, LEVELOFFSET.y + y).lightStrength) * 0x1C1C1C);
-			setTimeout(illuminate, 100, x+1, y);
+		for(var i = -1; i <= 1; i++){
+			for(var j = -1; j <= 1; j++){
+				//check only the directly adjacent beads, and not diagonal ones
+				if((Math.abs(i) === 1 && Math.abs(j) === 0) || (Math.abs(i) === 0 && Math.abs(j) === 1)) {
+                    if (PS.data(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j).lightStrength < strength - 1) {
+                        //set the bead light strength and change the beads color
+                        PS.data(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j).lightStrength = strength - 1;
+                        currentLevel[x + i][y + j].lightStrength = strength - 1;
+                        //this is where it assigns the color
+                        PS.color(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j,
+                            0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j).lightStrength) * 0x1C1C1C);
+                        setTimeout(illuminate, 100, x + i, y + j);
+                    }
+                }
+			}
 		}
-        //do this to the left
-        if(PS.data(LEVELOFFSET.x + x - 1, LEVELOFFSET.y + y).lightStrength < strength - 1){
-            //set the bead light strength and change the beads color
-            PS.data(LEVELOFFSET.x + x - 1, LEVELOFFSET.y + y).lightStrength = strength - 1;
-            currentLevel[x-1][y].lightStrength = strength - 1;
-            //this is where it assigns the color
-            PS.color(LEVELOFFSET.x + x - 1, LEVELOFFSET.y + y,
-                0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x - 1, LEVELOFFSET.y + y).lightStrength) * 0x1C1C1C);
-            setTimeout(illuminate, 100, x-1, y);
-        }
-        //do this to the top
-        if(PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y - 1).lightStrength < strength - 1){
-            //set the bead light strength and change the beads color
-            PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y - 1).lightStrength = strength - 1;
-            currentLevel[x][y-1].lightStrength = strength - 1;
-            //this is where it assigns the color
-            PS.color(LEVELOFFSET.x + x, LEVELOFFSET.y + y - 1,
-                0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y - 1).lightStrength) * 0x1C1C1C);
-            setTimeout(illuminate, 100, x, y-1);
-        }
-        //do this to the botton
-        if(PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y + 1).lightStrength < strength - 1){
-            //set the bead light strength and change the beads color
-            PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y + 1).lightStrength = strength - 1;
-            currentLevel[x][y+1].lightStrength = strength - 1;
-            //this is where it assigns the color
-            PS.color(LEVELOFFSET.x + x, LEVELOFFSET.y + y + 1,
-                0xFFFFFF - (MAXSTRENGTH - PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y + 1).lightStrength) * 0x1C1C1C);
-            setTimeout(illuminate, 100, x, y+1);
-        }
 	}
 
 	function update(){
