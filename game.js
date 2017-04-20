@@ -72,9 +72,21 @@ var G = (function(){
         map.set("LIGHT", voidfunc);
         map.set("FORK",function (x,y) {
             PS.borderColor(x,y,0x550000);
-            if(!PS.border(x,y).width){
-                PS.border(x,y).top = 5;
-                PS.border(x,y).right = 5;
+            PS.border(x,y, {top:5,right:5});
+			PS.data(x,y)['isFacing'] = function (i, j) {
+				var output = true;
+                if( i > 0){
+                    output = output && (PS.border(x,y).top > 0);
+                }else if (i < 0){
+                    output = output && (PS.border(x,y).bottom > 0);
+                }
+                if( j > 0){
+                    output = output && (PS.border(x,y).right > 0);
+                }else if (j < 0){
+                    output = output && (PS.border(x,y).left > 0);
+                }
+
+                return output;
             }
         });
         return map;
@@ -104,6 +116,7 @@ var G = (function(){
             border.bottom = border.right;
             border.right = topTemp;
             PS.border(x,y,border);
+            update();
         })
         return map;
     }());
@@ -179,7 +192,7 @@ var G = (function(){
     })();
     //array containing all of the levels
     var levels = [level0];
-    level0[3][2] = {type: "FORK", lightStrength: 0};
+    level0[3][5] = {type: "FORK", lightStrength: 0};
     //draws the specified level
     function drawLevel(level){
         currentLevel = levels[level];
@@ -228,13 +241,20 @@ var G = (function(){
     //given a bead location, will illuminate those around it an recursively call itself until all is lit
     function illuminate(x, y){
         //illuminate to the right
-        var strength = PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y).lightStrength;
+		var litData = PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y);
+        var strength = litData.lightStrength;
+
         for(var i = -1; i <= 1; i++){
             for(var j = -1; j <= 1; j++){
+            	if(litData.type === 'FORK' && !litData.isFacing(-j,-i)){
+					continue;
+				}
+
                 //check only the directly adjacent beads, and not diagonal ones
                 if((Math.abs(i) === 1 && Math.abs(j) === 0) || (Math.abs(i) === 0 && Math.abs(j) === 1)) {
                     var tiledata = PS.data(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j);
-                    if ((tiledata.type === 'PATH' || (tiledata.type === 'VALVE' && tiledata.open))
+                    if ((tiledata.type === 'PATH' || (tiledata.type === 'VALVE' && tiledata.open)
+						||(tiledata.type === 'FORK' && tiledata.isFacing(j,i)))
                         && tiledata.lightStrength < strength - 1) {
 
                         //set the bead light strength and change the beads color
