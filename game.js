@@ -50,12 +50,13 @@ var G = (function(){
 
     var MAXSTRENGTH = 20;
     var currentLevel;
+    var currentLevelNumber;
 
     var tileColorMap = (function(){
         var map = new Map();
         map.set("WALL", PS.COLOR_BLACK);
         map.set("PATH", 0x444444);
-        map.set("VALVE", 0x888888);
+        map.set("VALVE", 0x444444);
         map.set("LIGHT", PS.COLOR_WHITE);
         map.set("FORK", 0x444444);
         return map;
@@ -68,6 +69,7 @@ var G = (function(){
         map.set("VALVE", function (x, y) {
             this.open = false;
             PS.border(x, y, 12);   //Valve Border Size
+            PS.borderColor(x,y,PS.DEFAULT);
         });
         map.set("LIGHT", voidfunc);
         map.set("FORK",function (x,y) {
@@ -146,7 +148,7 @@ var G = (function(){
 
     var level1 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[0][5] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[0][5] = {type: "PATH", lightStrength: 0};
         level[1][5] = {type: "VALVE", lightStrength: 0};
         level[2][5] = {type: "PATH", lightStrength: 0};
         level[2][4] = {type: "PATH", lightStrength: 0};
@@ -379,6 +381,14 @@ var G = (function(){
     function drawLevel(level){
         currentLevel = levels[level];
 
+        //reset the grid
+		for(var i = 0; i < LEVELSIZE; i++){
+			for(var j = 0; j < LEVELSIZE; j++){
+				PS.border(LEVELOFFSET.x+i, LEVELOFFSET.y+j, 0);
+				PS.data(LEVELOFFSET.x+i, LEVELOFFSET.y+j, {type: "WALL", lightStrength: 0});
+			}
+		}
+
         //draw every bead of the level
         for(var i = 0; i < LEVELSIZE; i++){
             for(var j = 0; j < LEVELSIZE; j++) {
@@ -481,20 +491,14 @@ var G = (function(){
 		checkCompletion();
     }
 
+    //checks completion of a level by checking its borders and applying changes accordingly
     function checkCompletion(){
-    	//determine which level the currentLevel is
-		var levelNumber = 0;
-		for(var i = 0; i < levels.length; i++){
-			if(currentLevel === levels[i]){
-				levelNumber = i;
-			}
-		}
-
 		//check the borders to see if they have any light
+		//bottom border
 		for(var i = 0; i < LEVELSIZE; i++){
 			var beadData = currentLevel[i][LEVELSIZE-1];
 			if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-				PS.debug("a");
+
 			}
 		}
 	}
@@ -505,6 +509,7 @@ var G = (function(){
             LEVELSIZE:LEVELSIZE
         },
         currentLevel:currentLevel,
+        currentLevelNumber:currentLevelNumber,
         levels:levels,
         update:update,
         DrawLevel:drawLevel
@@ -542,7 +547,8 @@ PS.init = function( system, options ) {
     PS.statusText("Touch any bead");
 
     PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
-    G.DrawLevel(0);
+	G.currentLevelNumber = 0;
+    G.DrawLevel(G.currentLevelNumber);
 
 
     // Add any other initialization code you need here
@@ -657,6 +663,40 @@ PS.keyDown = function( key, shift, ctrl, options ) {
     //	PS.debug( "DOWN: key = " + key + ", shift = " + shift + "\n" );
 
     // Add code here for when a key is pressed
+	//left is 1005
+	//right is 1007
+	//down is 1008
+	//up is 1006
+	switch(key){
+		case PS.KEY_ARROW_RIGHT:
+			//if not one of the rightmost levels
+			if((G.currentLevelNumber+1)%3 !== 0) {
+                G.currentLevelNumber += 1;
+                G.DrawLevel(G.currentLevelNumber);
+            }
+			break;
+		case PS.KEY_ARROW_LEFT:
+			//if not one of the leftmost levels
+			if(G.currentLevelNumber%3 !== 0){
+				G.currentLevelNumber -= 1;
+				G.DrawLevel(G.currentLevelNumber);
+			}
+			break;
+		case PS.KEY_ARROW_DOWN:
+			if(G.currentLevelNumber < 6){
+				G.currentLevelNumber += 3;
+				G.DrawLevel(G.currentLevelNumber);
+			}
+			break;
+        case PS.KEY_ARROW_UP:
+            if(G.currentLevelNumber > 2){
+                G.currentLevelNumber -= 3;
+                G.DrawLevel(G.currentLevelNumber);
+            }
+            break;
+		default:
+			break;
+	}
 };
 
 // PS.keyUp ( key, shift, ctrl, options )
