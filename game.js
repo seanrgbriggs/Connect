@@ -74,13 +74,13 @@ var G = (function(){
         map.set("LIGHT", voidfunc);
         map.set("FORK",function (x,y) {
             PS.borderColor(x,y,0x550000);
-            PS.border(x,y, {top:5,right:5});
+            PS.border(x,y, {bottom:5,left:5});
 			PS.data(x,y)['isFacing'] = function (i, j) {
 				var output = true;
                 if( i > 0){
-                    output = output && (PS.border(x,y).top > 0);
-                }else if (i < 0){
                     output = output && (PS.border(x,y).bottom > 0);
+                }else if (i < 0){
+                    output = output && (PS.border(x,y).top > 0);
                 }
                 if( j > 0){
                     output = output && (PS.border(x,y).right > 0);
