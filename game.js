@@ -170,7 +170,7 @@ var G = (function(){
 
     var level2 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[0][4] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[0][4] = {type: "PATH", lightStrength: 0};
         level[1][4] = {type: "VALVE", lightStrength: 0};
         level[1][3] = {type: "PATH", lightStrength: 0};
         level[1][2] = {type: "PATH", lightStrength: 0};
@@ -209,7 +209,7 @@ var G = (function(){
 
     var level3 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[11][6] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[11][6] = {type: "PATH", lightStrength: 0};
         level[10][6] = {type: "PATH", lightStrength: 0};
         level[3][3] = {type: "FORK", lightStrength: 0};
         level[4][3] = {type: "PATH", lightStrength: 0};
@@ -254,7 +254,7 @@ var G = (function(){
 
     var level4 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[11][6] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[11][6] = {type: "PATH", lightStrength: 0};
         level[10][6] = {type: "PATH", lightStrength: 0};
         level[9][6] = {type: "FORK", lightStrength: 0};
         level[8][6] = {type: "PATH", lightStrength: 0};
@@ -304,7 +304,7 @@ var G = (function(){
 
     var level5 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[3][0] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[3][0] = {type: "PATH", lightStrength: 0};
         level[3][1] = {type: "VALVE", lightStrength: 0};
         level[3][2] = {type: "PATH", lightStrength: 0};
         level[3][3] = {type: "PATH", lightStrength: 0};
@@ -326,7 +326,7 @@ var G = (function(){
 
     var level6 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[3][0] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[3][0] = {type: "PATH", lightStrength: 0};
         level[3][1] = {type: "VALVE", lightStrength: 0};
         level[3][2] = {type: "PATH", lightStrength: 0};
         level[3][3] = {type: "PATH", lightStrength: 0};
@@ -343,7 +343,7 @@ var G = (function(){
 
     var level7 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[0][3] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[0][3] = {type: "PATH", lightStrength: 0};
         level[1][3] = {type: "VALVE", lightStrength: 0};
         level[2][3] = {type: "PATH", lightStrength: 0};
         level[3][3] = {type: "PATH", lightStrength: 0};
@@ -351,7 +351,7 @@ var G = (function(){
         level[3][1] = {type: "PATH", lightStrength: 0};
         level[3][0] = {type: "PATH", lightStrength: 0};
 
-        level[8][0] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[8][0] = {type: "PATH", lightStrength: 0};
         level[8][1] = {type: "VALVE", lightStrength: 0};
         level[8][2] = {type: "PATH", lightStrength: 0};
         level[8][3] = {type: "PATH", lightStrength: 0};
@@ -368,7 +368,13 @@ var G = (function(){
 
     var level8 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[0][4] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[0][6] = {type: "PATH", lightStrength: 0};
+        level[1][6] = {type: "VALVE", lightStrength: 0};
+        for(var i = 2; i < 10; i++){
+			for(var j = 2; j < 10; j++){
+				level[i][j] = {type: "PATH", lightStrength: 0};
+			}
+		}
         return level;
     })();
 
@@ -494,13 +500,34 @@ var G = (function(){
     //checks completion of a level by checking its borders and applying changes accordingly
     function checkCompletion(){
 		//check the borders to see if they have any light
-		//bottom border
-		for(var i = 0; i < LEVELSIZE; i++){
-			var beadData = currentLevel[i][LEVELSIZE-1];
-			if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-
-			}
-		}
+		//right border
+        for(var i = 0; i < LEVELSIZE; i++){
+            var beadData = currentLevel[LEVELSIZE-1][i];
+            if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
+            	levels[G.currentLevelNumber+1][0][i] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+            }
+        }
+        //left border
+        for(var i = 0; i < LEVELSIZE; i++){
+            var beadData = currentLevel[0][i];
+            if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
+                levels[G.currentLevelNumber-1][LEVELSIZE-1][i] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+            }
+        }
+        //bottom border
+        for(var i = 0; i < LEVELSIZE; i++){
+            var beadData = currentLevel[i][LEVELSIZE-1];
+            if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
+                levels[G.currentLevelNumber+3][i][0] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+            }
+        }
+        //top border
+        for(var i = 0; i < LEVELSIZE; i++){
+            var beadData = currentLevel[i][0];
+            if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
+                levels[G.currentLevelNumber-3][i][LEVELSIZE-1] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+            }
+        }
 	}
 
     var exports = {
