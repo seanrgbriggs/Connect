@@ -528,6 +528,15 @@ var G = (function(){
                 levels[G.currentLevelNumber-3][i][LEVELSIZE-1] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
             }
         }
+
+        //check completion of the game
+        if(currentLevel === level8 && currentLevel[9][2].lightStrength > 0) {
+            if (db && PS.dbValid(db)) {
+                PS.dbEvent(db, "gameover", true);
+                PS.dbSend(db, "bmoriarty", {discard: true});
+                db = null;
+            }
+        }
 	}
 
     var exports = {
@@ -556,6 +565,10 @@ var G = (function(){
 // [system] = an object containing engine and platform information; see documentation for details
 // [options] = an object with optional parameters; see documentation for details
 
+var db = "connect";
+var finalize = function(){
+
+};
 
 PS.init = function( system, options ) {
     "use strict";
@@ -577,6 +590,15 @@ PS.init = function( system, options ) {
 	G.currentLevelNumber = 0;
     G.DrawLevel(G.currentLevelNumber);
 
+    if ( db ) {
+        db = PS.dbInit( db, { login : finalize } );
+        if ( db === PS.ERROR ) {
+            db = null;
+        }
+    }
+    else {
+        finalize();
+    }
 
     // Add any other initialization code you need here
 };
@@ -791,5 +813,12 @@ PS.input = function( sensors, options ) {
 	 */
 
     // Add code here for when an input event is detected
+};
+
+PS.shutdown = function( options ) {
+    if ( db && PS.dbValid( db ) ) {
+        PS.dbEvent( db, "shutdown", true );
+        PS.dbSend( db, "bmoriarty", { discard : true } );
+    }
 };
 
