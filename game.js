@@ -48,7 +48,7 @@ var G = (function(){
     var LEVELSIZE = 12;
     var LEVELOFFSET = {x:2,y:2};
 
-    var MAXSTRENGTH = 7;
+    var MAXSTRENGTH = 20;
     var currentLevel;
 
     var tileColorMap = (function(){
@@ -129,70 +129,252 @@ var G = (function(){
 	 */
     //level0, or the starting level
     var level0 = (function () {
-        var level0 = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level0[1][5] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
-        level0[2][5] = {type: "VALVE", lightStrength: 0};
-        level0[3][5] = {type: "PATH", lightStrength: 0};
-        level0[4][5] = {type: "PATH", lightStrength: 0};
-        level0[5][5] = {type: "PATH", lightStrength: 0};
-        level0[6][5] = {type: "PATH", lightStrength: 0};
-        level0[7][5] = {type: "PATH", lightStrength: 0};
-        level0[8][5] = {type: "PATH", lightStrength: 0};
-        level0[9][5] = {type: "PATH", lightStrength: 0};
-        level0[10][5] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
-        level0[2][4] = {type: "PATH", lightStrength: 0};
-        level0[3][4] = {type: "PATH", lightStrength: 0};
-        level0[4][4] = {type: "PATH", lightStrength: 0};
-        level0[5][4] = {type: "PATH", lightStrength: 0};
-        level0[6][4] = {type: "PATH", lightStrength: 0};
-        level0[7][4] = {type: "PATH", lightStrength: 0};
-        level0[8][4] = {type: "PATH", lightStrength: 0};
-        level0[9][4] = {type: "PATH", lightStrength: 0};
-        level0[2][3] = {type: "PATH", lightStrength: 0};
-        level0[3][3] = {type: "PATH", lightStrength: 0};
-        level0[4][3] = {type: "PATH", lightStrength: 0};
-        level0[5][3] = {type: "PATH", lightStrength: 0};
-        level0[6][3] = {type: "PATH", lightStrength: 0};
-        level0[7][3] = {type: "PATH", lightStrength: 0};
-        level0[8][3] = {type: "PATH", lightStrength: 0};
-        level0[9][3] = {type: "PATH", lightStrength: 0};
-        level0[2][2] = {type: "PATH", lightStrength: 0};
-        level0[3][2] = {type: "PATH", lightStrength: 0};
-        level0[4][2] = {type: "PATH", lightStrength: 0};
-        level0[5][2] = {type: "PATH", lightStrength: 0};
-        level0[6][2] = {type: "PATH", lightStrength: 0};
-        level0[7][2] = {type: "PATH", lightStrength: 0};
-        level0[8][2] = {type: "PATH", lightStrength: 0};
-        level0[9][2] = {type: "PATH", lightStrength: 0};
-        level0[2][6] = {type: "PATH", lightStrength: 0};
-        level0[3][6] = {type: "PATH", lightStrength: 0};
-        level0[4][6] = {type: "PATH", lightStrength: 0};
-        level0[5][6] = {type: "PATH", lightStrength: 0};
-        level0[6][6] = {type: "PATH", lightStrength: 0};
-        level0[7][6] = {type: "PATH", lightStrength: 0};
-        level0[8][6] = {type: "PATH", lightStrength: 0};
-        level0[9][6] = {type: "PATH", lightStrength: 0};
-        level0[2][7] = {type: "PATH", lightStrength: 0};
-        level0[3][7] = {type: "PATH", lightStrength: 0};
-        level0[4][7] = {type: "PATH", lightStrength: 0};
-        level0[5][7] = {type: "PATH", lightStrength: 0};
-        level0[6][7] = {type: "PATH", lightStrength: 0};
-        level0[7][7] = {type: "PATH", lightStrength: 0};
-        level0[8][7] = {type: "PATH", lightStrength: 0};
-        level0[9][7] = {type: "PATH", lightStrength: 0};
-        level0[2][8] = {type: "PATH", lightStrength: 0};
-        level0[3][8] = {type: "PATH", lightStrength: 0};
-        level0[4][8] = {type: "PATH", lightStrength: 0};
-        level0[5][8] = {type: "PATH", lightStrength: 0};
-        level0[6][8] = {type: "PATH", lightStrength: 0};
-        level0[7][8] = {type: "PATH", lightStrength: 0};
-        level0[8][8] = {type: "PATH", lightStrength: 0};
-        level0[9][8] = {type: "PATH", lightStrength: 0};
-        return level0;
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[1][5] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[2][5] = {type: "VALVE", lightStrength: 0};
+        level[3][5] = {type: "PATH", lightStrength: 0};
+        level[4][5] = {type: "PATH", lightStrength: 0};
+        level[5][5] = {type: "PATH", lightStrength: 0};
+        level[6][5] = {type: "PATH", lightStrength: 0};
+        level[7][5] = {type: "PATH", lightStrength: 0};
+        level[8][5] = {type: "PATH", lightStrength: 0};
+        level[9][5] = {type: "PATH", lightStrength: 0};
+        level[10][5] = {type: "PATH", lightStrength: 0};
+        level[11][5] = {type: "PATH", lightStrength: 0};
+        return level;
     })();
+
+    var level1 = (function () {
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[0][5] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[1][5] = {type: "VALVE", lightStrength: 0};
+        level[2][5] = {type: "PATH", lightStrength: 0};
+        level[2][4] = {type: "PATH", lightStrength: 0};
+        level[2][3] = {type: "PATH", lightStrength: 0};
+        level[2][2] = {type: "PATH", lightStrength: 0};
+        level[3][2] = {type: "PATH", lightStrength: 0};
+        level[4][2] = {type: "PATH", lightStrength: 0};
+        level[5][2] = {type: "PATH", lightStrength: 0};
+        level[6][2] = {type: "PATH", lightStrength: 0};
+        level[7][2] = {type: "PATH", lightStrength: 0};
+        level[8][2] = {type: "PATH", lightStrength: 0};
+        level[9][2] = {type: "VALVE", lightStrength: 0};
+        level[9][3] = {type: "PATH", lightStrength: 0};
+        level[9][4] = {type: "PATH", lightStrength: 0};
+        level[10][4] = {type: "PATH", lightStrength: 0};
+        level[11][4] = {type: "PATH", lightStrength: 0};
+        return level;
+    })();
+
+    var level2 = (function () {
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[0][4] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[1][4] = {type: "VALVE", lightStrength: 0};
+        level[1][3] = {type: "PATH", lightStrength: 0};
+        level[1][2] = {type: "PATH", lightStrength: 0};
+        level[1][1] = {type: "PATH", lightStrength: 0};
+        level[2][1] = {type: "PATH", lightStrength: 0};
+        level[3][1] = {type: "PATH", lightStrength: 0};
+        level[3][2] = {type: "PATH", lightStrength: 0};
+        level[3][3] = {type: "PATH", lightStrength: 0};
+        level[3][4] = {type: "PATH", lightStrength: 0};
+        level[4][4] = {type: "VALVE", lightStrength: 0};
+        level[5][4] = {type: "PATH", lightStrength: 0};
+        level[5][3] = {type: "PATH", lightStrength: 0};
+        level[5][2] = {type: "PATH", lightStrength: 0};
+        level[5][1] = {type: "PATH", lightStrength: 0};
+        level[6][1] = {type: "PATH", lightStrength: 0};
+        level[7][1] = {type: "PATH", lightStrength: 0};
+        level[7][2] = {type: "PATH", lightStrength: 0};
+        level[7][3] = {type: "PATH", lightStrength: 0};
+        level[7][4] = {type: "PATH", lightStrength: 0};
+        level[8][4] = {type: "PATH", lightStrength: 0};
+        level[9][4] = {type: "PATH", lightStrength: 0};
+        level[9][3] = {type: "PATH", lightStrength: 0};
+        level[9][2] = {type: "PATH", lightStrength: 0};
+        level[9][1] = {type: "PATH", lightStrength: 0};
+        level[10][1] = {type: "PATH", lightStrength: 0};
+        level[11][1] = {type: "PATH", lightStrength: 0};
+        level[3][5] = {type: "VALVE", lightStrength: 0};
+        level[3][6] = {type: "PATH", lightStrength: 0};
+        level[3][7] = {type: "PATH", lightStrength: 0};
+        level[3][8] = {type: "PATH", lightStrength: 0};
+        level[3][9] = {type: "PATH", lightStrength: 0};
+        level[3][10] = {type: "PATH", lightStrength: 0};
+        level[3][11] = {type: "PATH", lightStrength: 0};
+        return level;
+    })();
+
+    var level3 = (function () {
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[11][6] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[10][6] = {type: "PATH", lightStrength: 0};
+        level[3][3] = {type: "FORK", lightStrength: 0};
+        level[4][3] = {type: "PATH", lightStrength: 0};
+        level[5][3] = {type: "PATH", lightStrength: 0};
+        level[6][3] = {type: "FORK", lightStrength: 0};
+        level[7][3] = {type: "PATH", lightStrength: 0};
+        level[8][3] = {type: "PATH", lightStrength: 0};
+        level[9][3] = {type: "FORK", lightStrength: 0};
+        level[3][4] = {type: "PATH", lightStrength: 0};
+        level[3][5] = {type: "PATH", lightStrength: 0};
+        level[6][4] = {type: "PATH", lightStrength: 0};
+        level[6][5] = {type: "PATH", lightStrength: 0};
+        level[9][4] = {type: "PATH", lightStrength: 0};
+        level[9][5] = {type: "PATH", lightStrength: 0};
+
+        level[3][6] = {type: "FORK", lightStrength: 0};
+        level[4][6] = {type: "PATH", lightStrength: 0};
+        level[5][6] = {type: "PATH", lightStrength: 0};
+        level[6][6] = {type: "FORK", lightStrength: 0};
+        level[7][6] = {type: "PATH", lightStrength: 0};
+        level[8][6] = {type: "PATH", lightStrength: 0};
+        level[9][6] = {type: "FORK", lightStrength: 0};
+        level[3][7] = {type: "PATH", lightStrength: 0};
+        level[3][8] = {type: "PATH", lightStrength: 0};
+        level[6][7] = {type: "PATH", lightStrength: 0};
+        level[6][8] = {type: "PATH", lightStrength: 0};
+        level[9][7] = {type: "PATH", lightStrength: 0};
+        level[9][8] = {type: "PATH", lightStrength: 0};
+
+        level[3][9] = {type: "PATH", lightStrength: 0};
+        level[4][9] = {type: "PATH", lightStrength: 0};
+        level[5][9] = {type: "PATH", lightStrength: 0};
+        level[6][9] = {type: "FORK", lightStrength: 0};
+        level[7][9] = {type: "PATH", lightStrength: 0};
+        level[8][9] = {type: "PATH", lightStrength: 0};
+        level[9][9] = {type: "FORK", lightStrength: 0};
+        level[3][10] = {type: "PATH", lightStrength: 0};
+        level[3][11] = {type: "PATH", lightStrength: 0};
+
+        return level;
+    })();
+
+    var level4 = (function () {
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[11][6] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[10][6] = {type: "PATH", lightStrength: 0};
+        level[9][6] = {type: "FORK", lightStrength: 0};
+        level[8][6] = {type: "PATH", lightStrength: 0};
+        level[7][6] = {type: "PATH", lightStrength: 0};
+        level[6][6] = {type: "PATH", lightStrength: 0};
+        level[5][6] = {type: "PATH", lightStrength: 0};
+        level[4][6] = {type: "PATH", lightStrength: 0};
+        level[3][6] = {type: "PATH", lightStrength: 0};
+        level[2][6] = {type: "FORK", lightStrength: 0};
+        level[1][6] = {type: "PATH", lightStrength: 0};
+        level[0][6] = {type: "PATH", lightStrength: 0};
+        level[9][2] = {type: "FORK", lightStrength: 0};
+        level[8][2] = {type: "PATH", lightStrength: 0};
+        level[7][2] = {type: "PATH", lightStrength: 0};
+        level[6][2] = {type: "PATH", lightStrength: 0};
+        level[5][2] = {type: "PATH", lightStrength: 0};
+        level[4][2] = {type: "PATH", lightStrength: 0};
+        level[3][2] = {type: "PATH", lightStrength: 0};
+        level[2][2] = {type: "FORK", lightStrength: 0};
+        level[9][5] = {type: "PATH", lightStrength: 0};
+        level[9][4] = {type: "PATH", lightStrength: 0};
+        level[9][3] = {type: "PATH", lightStrength: 0};
+        level[9][1] = {type: "PATH", lightStrength: 0};
+        level[2][5] = {type: "PATH", lightStrength: 0};
+        level[2][4] = {type: "PATH", lightStrength: 0};
+        level[2][3] = {type: "PATH", lightStrength: 0};
+        level[2][1] = {type: "PATH", lightStrength: 0};
+        level[1][2] = {type: "PATH", lightStrength: 0};
+        level[10][2] = {type: "PATH", lightStrength: 0};
+
+        level[9][9] = {type: "PATH", lightStrength: 0};
+        level[8][9] = {type: "FORK", lightStrength: 0};
+        level[7][9] = {type: "PATH", lightStrength: 0};
+        level[6][9] = {type: "PATH", lightStrength: 0};
+        level[5][9] = {type: "PATH", lightStrength: 0};
+        level[4][9] = {type: "PATH", lightStrength: 0};
+        level[3][9] = {type: "FORK", lightStrength: 0};
+        level[2][9] = {type: "PATH", lightStrength: 0};
+        level[3][8] = {type: "PATH", lightStrength: 0};
+        level[3][10] = {type: "PATH", lightStrength: 0};
+        level[3][11] = {type: "PATH", lightStrength: 0};
+        level[8][8] = {type: "PATH", lightStrength: 0};
+        level[8][10] = {type: "PATH", lightStrength: 0};
+        level[8][11] = {type: "PATH", lightStrength: 0};
+        return level;
+    })();
+
+    var level5 = (function () {
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[3][0] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[3][1] = {type: "VALVE", lightStrength: 0};
+        level[3][2] = {type: "PATH", lightStrength: 0};
+        level[3][3] = {type: "PATH", lightStrength: 0};
+        level[3][4] = {type: "PATH", lightStrength: 0};
+        level[3][5] = {type: "PATH", lightStrength: 0};
+        level[3][6] = {type: "FORK", lightStrength: 0};
+        level[4][6] = {type: "PATH", lightStrength: 0};
+        level[5][6] = {type: "PATH", lightStrength: 0};
+        level[6][6] = {type: "PATH", lightStrength: 0};
+        level[7][6] = {type: "PATH", lightStrength: 0};
+        level[8][6] = {type: "PATH", lightStrength: 0};
+        level[9][6] = {type: "PATH", lightStrength: 0};
+        level[10][6] = {type: "PATH", lightStrength: 0};
+        level[2][6] = {type: "PATH", lightStrength: 0};
+        level[1][6] = {type: "PATH", lightStrength: 0};
+        level[0][6] = {type: "PATH", lightStrength: 0};
+        return level;
+    })();
+
+    var level6 = (function () {
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[3][0] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[3][1] = {type: "VALVE", lightStrength: 0};
+        level[3][2] = {type: "PATH", lightStrength: 0};
+        level[3][3] = {type: "PATH", lightStrength: 0};
+        level[4][3] = {type: "PATH", lightStrength: 0};
+        level[5][3] = {type: "PATH", lightStrength: 0};
+        level[6][3] = {type: "PATH", lightStrength: 0};
+        level[7][3] = {type: "PATH", lightStrength: 0};
+        level[8][3] = {type: "PATH", lightStrength: 0};
+        level[9][3] = {type: "PATH", lightStrength: 0};
+        level[10][3] = {type: "PATH", lightStrength: 0};
+        level[11][3] = {type: "PATH", lightStrength: 0};
+        return level;
+    })();
+
+    var level7 = (function () {
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[0][3] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[1][3] = {type: "VALVE", lightStrength: 0};
+        level[2][3] = {type: "PATH", lightStrength: 0};
+        level[3][3] = {type: "PATH", lightStrength: 0};
+        level[3][2] = {type: "PATH", lightStrength: 0};
+        level[3][1] = {type: "PATH", lightStrength: 0};
+        level[3][0] = {type: "PATH", lightStrength: 0};
+
+        level[8][0] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        level[8][1] = {type: "VALVE", lightStrength: 0};
+        level[8][2] = {type: "PATH", lightStrength: 0};
+        level[8][3] = {type: "PATH", lightStrength: 0};
+
+        for(var i = 6; i <= 10; i++){
+        	for(var j = 4; j <= 8; j++){
+                level[i][j] = {type: "FORK", lightStrength: 0};
+			}
+		}
+        level[11][6] = {type: "PATH", lightStrength: 0};
+
+        return level;
+    })();
+
+    var level8 = (function () {
+        var level = [[], [], [], [], [], [], [], [], [], [], [], []];
+        level[0][4] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+        return level;
+    })();
+
     //array containing all of the levels
-    var levels = [level0];
-    level0[3][5] = {type: "FORK", lightStrength: 0};
+	//would it be easier to make it 2D array?
+    var levels = [level0, level1, level2,
+				  level3, level4, level5,
+        		  level6, level7, level8];
     //draws the specified level
     function drawLevel(level){
         currentLevel = levels[level];
@@ -262,7 +444,7 @@ var G = (function(){
                         currentLevel[x + i][y + j].lightStrength = strength - 1;
                         //this is where it assigns the color
                         PS.color(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j,
-                            0xFFFFFF - (MAXSTRENGTH - tiledata.lightStrength) * 0x1C1C1C);
+                            0xFFFFFF - (MAXSTRENGTH - tiledata.lightStrength) * 0x070707);
                         illuminate( x + i, y + j);
                     }
                 }
@@ -296,8 +478,26 @@ var G = (function(){
             illuminate(l.x - LEVELOFFSET.x, l.y - LEVELOFFSET.y);
             l = lights.pop();
         }
-
+		checkCompletion();
     }
+
+    function checkCompletion(){
+    	//determine which level the currentLevel is
+		var levelNumber = 0;
+		for(var i = 0; i < levels.length; i++){
+			if(currentLevel === levels[i]){
+				levelNumber = i;
+			}
+		}
+
+		//check the borders to see if they have any light
+		for(var i = 0; i < LEVELSIZE; i++){
+			var beadData = currentLevel[i][LEVELSIZE-1];
+			if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
+				PS.debug("a");
+			}
+		}
+	}
 
     var exports = {
         constants:{
