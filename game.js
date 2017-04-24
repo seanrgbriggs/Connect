@@ -67,8 +67,13 @@ var G = (function(){
         map.set("WALL", voidfunc);
         map.set("PATH", voidfunc);
         map.set("VALVE", function (x, y) {
-            this.open = false;
-            PS.border(x, y, 12);   //Valve Border Size
+            if(this.open){
+                PS.border(x, y, 5);
+            }
+            else{
+                this.open = false;
+                PS.border(x, y, 12);   //Valve Border Size
+            }
             PS.borderColor(x,y,PS.DEFAULT);
         });
         map.set("LIGHT", voidfunc);
@@ -424,7 +429,6 @@ var G = (function(){
                         illuminate(i, j);
                     }
 
-                    //TODO fix the color to show lightstrength at the level load
                     if(tileData && tileData.lightStrength > 0){
                         PS.color(x, y, 0xFFFFFF - (MAXSTRENGTH - tileData.lightStrength) * 0x070707);
                     }
