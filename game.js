@@ -405,7 +405,6 @@ var G = (function(){
                 var y = LEVELOFFSET.y + j;
 
                 if(currentLevel[i][j]){
-                    PS.color(x, y, tileColorMap.get(currentLevel[i][j].type));
 
                     //Add the appropriate onclick functionality of the bead.
                     var tileData = currentLevel[i][j];
@@ -425,6 +424,13 @@ var G = (function(){
                         illuminate(i, j);
                     }
 
+                    //TODO fix the color to show lightstrength at the level load
+                    if(tileData && tileData.lightStrength > 0){
+                        PS.color(x, y, 0xFFFFFF - (MAXSTRENGTH - tileData.lightStrength) * 0x070707);
+                    }
+                    else {
+                        PS.color(x, y, tileColorMap.get(currentLevel[i][j].type));
+                    }
 
                 }
                 //else make it black
@@ -545,7 +551,6 @@ var G = (function(){
             LEVELSIZE:LEVELSIZE
         },
         currentLevel:currentLevel,
-        currentLevelNumber:currentLevelNumber,
         levels:levels,
         update:update,
         DrawLevel:drawLevel
@@ -565,7 +570,7 @@ var G = (function(){
 // [system] = an object containing engine and platform information; see documentation for details
 // [options] = an object with optional parameters; see documentation for details
 
-var db = "connect";
+var db = null;
 var finalize = function(){
 
 };
