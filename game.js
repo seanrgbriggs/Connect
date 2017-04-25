@@ -148,7 +148,6 @@ var G = (function(){
 
             if(data.hasOwnProperty('source')){
                 var src = data.source;
-                PS.debug(src.l + " "+ src.i + " "+src.j + "\n");
                 var strength = levels[src.l][src.i][src.j].lightStrength;
                 if(strength){
                     data.lightStrength = strength - 1; 
@@ -243,7 +242,6 @@ var G = (function(){
         level[9][2] = {type: "PATH", lightStrength: 0};
         level[9][1] = {type: "PATH", lightStrength: 0};
         level[10][1] = {type: "PATH", lightStrength: 0};
-        level[11][1] = {type: "PATH", lightStrength: 0};
         level[3][5] = {type: "VALVE", lightStrength: 0};
         level[3][6] = {type: "PATH", lightStrength: 0};
         level[3][7] = {type: "PATH", lightStrength: 0};
@@ -377,26 +375,51 @@ var G = (function(){
         level[3][1] = {type: "VALVE", lightStrength: 0};
         level[3][2] = {type: "PATH", lightStrength: 0};
         level[3][3] = {type: "PATH", lightStrength: 0};
-        level[4][3] = {type: "PATH", lightStrength: 0};
-        level[5][3] = {type: "PATH", lightStrength: 0};
-        level[6][3] = {type: "PATH", lightStrength: 0};
-        level[7][3] = {type: "PATH", lightStrength: 0};
-        level[8][3] = {type: "PATH", lightStrength: 0};
-        level[9][3] = {type: "PATH", lightStrength: 0};
-        level[10][3] = {type: "PATH", lightStrength: 0};
-        level[11][3] = {type: "PATH", lightStrength: 0};
+        level[3][4] = {type: "PATH", lightStrength: 0};
+        level[4][4] = {type: "PATH", lightStrength: 0};
+        level[5][4] = {type: "PATH", lightStrength: 0};
+        level[6][4] = {type: "PATH", lightStrength: 0};
+        level[7][4] = {type: "PATH", lightStrength: 0};
+        level[8][4] = {type: "PATH", lightStrength: 0};
+        level[9][4] = {type: "PATH", lightStrength: 0};
+        level[10][4] = {type: "PATH", lightStrength: 0};
+        level[11][4] = {type: "PATH", lightStrength: 0};
+        level[3][5] = {type: "PATH", lightStrength: 0};
+        level[3][6] = {type: "PATH", lightStrength: 0};
+        level[3][7] = {type: "PATH", lightStrength: 0};
+        level[3][8] = {type: "PATH", lightStrength: 0};
+        level[4][8] = {type: "PATH", lightStrength: 0};
+        level[5][8] = {type: "PATH", lightStrength: 0};
+        level[6][8] = {type: "PATH", lightStrength: 0};
+        level[7][8] = {type: "PATH", lightStrength: 0};
+        level[8][8] = {type: "PATH", lightStrength: 0};
+        level[9][8] = {type: "PATH", lightStrength: 0};
+        level[10][8] = {type: "PATH", lightStrength: 0};
+        level[11][8] = {type: "PATH", lightStrength: 0};
         return level;
     })();
 
     var level7 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
-        level[0][3] = {type: "PATH", lightStrength: 0};
-        level[1][3] = {type: "VALVE", lightStrength: 0};
-        level[2][3] = {type: "PATH", lightStrength: 0};
+        level[0][4] = {type: "PATH", lightStrength: 0};
+        level[1][4] = {type: "PATH", lightStrength: 0};
+        level[2][4] = {type: "PATH", lightStrength: 0};
+        level[3][4] = {type: "FORK", lightStrength: 0};
         level[3][3] = {type: "PATH", lightStrength: 0};
         level[3][2] = {type: "PATH", lightStrength: 0};
         level[3][1] = {type: "PATH", lightStrength: 0};
         level[3][0] = {type: "PATH", lightStrength: 0};
+
+        level[0][8] = {type: "PATH", lightStrength: 0};
+        level[1][8] = {type: "PATH", lightStrength: 0};
+        level[2][8] = {type: "PATH", lightStrength: 0};
+        level[3][8] = {type: "PATH", lightStrength: 0};
+        level[3][7] = {type: "PATH", lightStrength: 0};
+        level[3][6] = {type: "PATH", lightStrength: 0};
+        level[3][5] = {type: "PATH", lightStrength: 0};
+        level[4][4] = {type: "PATH", lightStrength: 0};
+        level[5][4] = {type: "FORK", lightStrength: 0};
+
 
         level[8][0] = {type: "PATH", lightStrength: 0};
         level[8][1] = {type: "VALVE", lightStrength: 0};
@@ -625,7 +648,7 @@ var G = (function(){
 // [system] = an object containing engine and platform information; see documentation for details
 // [options] = an object with optional parameters; see documentation for details
 
-var db = null;
+var db = "connect";
 var finalize = function(){
 
 };
