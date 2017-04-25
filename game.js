@@ -48,7 +48,11 @@ var G = (function(){
     var LEVELSIZE = 12;
     var LEVELOFFSET = {x:2,y:2};
 
-    var MAXSTRENGTH = 20;
+    var MAXSTRENGTH = 156;
+
+    var LIGHTDECREMENT = 0x010101;
+    
+
     var currentLevel;
     var currentLevelNumber;
 
@@ -430,7 +434,7 @@ var G = (function(){
                     }
 
                     if(tileData && tileData.lightStrength > 0){
-                        PS.color(x, y, 0xFFFFFF - (MAXSTRENGTH - tileData.lightStrength) * 0x070707);
+                        PS.color(x, y, 0xFFFFFF - ((MAXSTRENGTH - tileData.lightStrength) * LIGHTDECREMENT));
                     }
                     else {
                         PS.color(x, y, tileColorMap.get(currentLevel[i][j].type));
@@ -470,7 +474,7 @@ var G = (function(){
                         currentLevel[x + i][y + j].lightStrength = strength - 1;
                         //this is where it assigns the color
                         PS.color(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j,
-                            0xFFFFFF - (MAXSTRENGTH - tiledata.lightStrength) * 0x070707);
+                            0xFFFFFF - (MAXSTRENGTH - tiledata.lightStrength) * LIGHTDECREMENT);
                         illuminate( x + i, y + j);
                     }
                 }
@@ -514,28 +518,28 @@ var G = (function(){
         for(var i = 0; i < LEVELSIZE; i++){
             var beadData = currentLevel[LEVELSIZE-1][i];
             if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-            	levels[G.currentLevelNumber+1][0][i] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+            	levels[G.currentLevelNumber+1][0][i] = {type: "LIGHT", lightStrength: beadData.lightStrength};
             }
         }
         //left border
         for(var i = 0; i < LEVELSIZE; i++){
             var beadData = currentLevel[0][i];
             if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-                levels[G.currentLevelNumber-1][LEVELSIZE-1][i] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+                levels[G.currentLevelNumber-1][LEVELSIZE-1][i] = {type: "LIGHT", lightStrength: beadData.lightStrength};
             }
         }
         //bottom border
         for(var i = 0; i < LEVELSIZE; i++){
             var beadData = currentLevel[i][LEVELSIZE-1];
             if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-                levels[G.currentLevelNumber+3][i][0] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+                levels[G.currentLevelNumber+3][i][0] = {type: "LIGHT", lightStrength: beadData.lightStrength};
             }
         }
         //top border
         for(var i = 0; i < LEVELSIZE; i++){
             var beadData = currentLevel[i][0];
             if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-                levels[G.currentLevelNumber-3][i][LEVELSIZE-1] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+                levels[G.currentLevelNumber-3][i][LEVELSIZE-1] = {type: "LIGHT", lightStrength: beadData.lightStrength};
             }
         }
 
@@ -552,7 +556,9 @@ var G = (function(){
     var exports = {
         constants:{
             GRIDSIZE:GRIDSIZE,
-            LEVELSIZE:LEVELSIZE
+            LEVELSIZE:LEVELSIZE,
+            MAXSTRENGTH:MAXSTRENGTH,
+            LIGHTDECREMENT:LIGHTDECREMENT
         },
         currentLevel:currentLevel,
         levels:levels,
@@ -576,6 +582,7 @@ var G = (function(){
 
 var db = null;
 var finalize = function(){
+    PS.debug(G.constants.LIGHTDECREMENT);
 
 };
 
@@ -598,6 +605,7 @@ PS.init = function( system, options ) {
     PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
 	G.currentLevelNumber = 0;
     G.DrawLevel(G.currentLevelNumber);
+
 
     if ( db ) {
         db = PS.dbInit( db, { login : finalize } );
