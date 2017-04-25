@@ -143,7 +143,25 @@ var G = (function(){
         map.set("WALL", voidfunc);
         map.set("PATH", voidfunc);
         map.set("VALVE", voidfunc);
-        map.set("LIGHT", voidfunc);
+        map.set("LIGHT", function(x,y){
+            var data = PS.data(x,y);
+
+            if(data.hasOwnProperty('source')){
+                var src = data.source;
+                PS.debug(src.l + " "+ src.i + " "+src.j + "\n");
+                var strength = levels[src.l][src.i][src.j].lightStrength;
+                if(strength){
+                    data.lightStrength = strength - 1; 
+                    PS.data(x,y,data);
+                }else{
+                    data.type = "PATH";
+                    data.lightStrength = 0;
+                    PS.data(x,y,data);
+                }
+             // /   PS.color(x,y,0xFFFFFF - ((MAXSTRENGTH - data.lightStrength) * LIGHTDECREMENT));
+                // illuminate(x - LEVELOFFSET.x, y - LEVELOFFSET.y);
+            }
+        });
         map.set("FORK",function (x,y) { 
                 if(PS.data(x,y).hasOwnProperty('border')){
                     PS.border(x,y,PS.data(x,y).border);
@@ -472,6 +490,8 @@ var G = (function(){
                 }
             }
         }
+
+        update();
     }
 
     //shallow copy, meaning that you can manipulate currentLevel, and the state will be saved
@@ -543,28 +563,28 @@ var G = (function(){
         for(var i = 0; i < LEVELSIZE; i++){
             var beadData = currentLevel[LEVELSIZE-1][i];
             if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-            	levels[G.currentLevelNumber+1][0][i] = {type: "LIGHT", lightStrength: beadData.lightStrength};
+            	levels[G.currentLevelNumber+1][0][i] = {type: "LIGHT", lightStrength: beadData.lightStrength, source: {l: G.currentLevelNumber, i: LEVELSIZE-1, j: i}};
             }
         }
         //left border
         for(var i = 0; i < LEVELSIZE; i++){
             var beadData = currentLevel[0][i];
             if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-                levels[G.currentLevelNumber-1][LEVELSIZE-1][i] = {type: "LIGHT", lightStrength: beadData.lightStrength};
+                levels[G.currentLevelNumber-1][LEVELSIZE-1][i] = {type: "LIGHT", lightStrength: beadData.lightStrength, source: {l: G.currentLevelNumber, i: 0, j: i}};
             }
         }
         //bottom border
         for(var i = 0; i < LEVELSIZE; i++){
             var beadData = currentLevel[i][LEVELSIZE-1];
             if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-                levels[G.currentLevelNumber+3][i][0] = {type: "LIGHT", lightStrength: beadData.lightStrength};
+                levels[G.currentLevelNumber+3][i][0] = {type: "LIGHT", lightStrength: beadData.lightStrength, source: {l: G.currentLevelNumber, i: i, j: LEVELSIZE-1}};
             }
         }
         //top border
         for(var i = 0; i < LEVELSIZE; i++){
             var beadData = currentLevel[i][0];
             if(beadData && beadData.lightStrength > 0 && beadData.type !== "LIGHT"){
-                levels[G.currentLevelNumber-3][i][LEVELSIZE-1] = {type: "LIGHT", lightStrength: beadData.lightStrength};
+                levels[G.currentLevelNumber-3][i][LEVELSIZE-1] = {type: "LIGHT", lightStrength: beadData.lightStrength, source: {l: G.currentLevelNumber, i: i, j: 0}};
             }
         }
 
@@ -607,7 +627,6 @@ var G = (function(){
 
 var db = null;
 var finalize = function(){
-    PS.debug(G.constants.LIGHTDECREMENT);
 
 };
 
