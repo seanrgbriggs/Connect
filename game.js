@@ -126,11 +126,31 @@ var G = (function(){
             border.left = border.bottom;
             border.bottom = border.right;
             border.right = topTemp;
+
+            var updatedData = PS.data(x,y);
+            updatedData.border = border;
+            PS.data(x,y, updatedData);
+
             PS.border(x,y,border);
             update();
         })
         return map;
     }());
+
+    var tileOnDrawMap = (function () {
+        var map = new Map();
+        function voidfunc(x, y) {}
+        map.set("WALL", voidfunc);
+        map.set("PATH", voidfunc);
+        map.set("VALVE", voidfunc);
+        map.set("LIGHT", voidfunc);
+        map.set("FORK",function (x,y) { 
+                if(PS.data(x,y).hasOwnProperty('border')){
+                    PS.border(x,y,PS.data(x,y).border);
+                }
+            });
+        return map;
+    })();
 
     //levels are 2d arrays, though js does not support 2d array, so using array of arrays
     //examples:
@@ -426,6 +446,11 @@ var G = (function(){
                     if(tileOnInitMap.has(tileData.type)){
                         tileData['init']=tileOnInitMap.get(tileData.type);
                         tileData.init(x,y);
+                    }
+
+                    //Run the appropriate draw method for each bead
+                    if(tileOnDrawMap.has(tileData.type)){
+                        tileOnDrawMap.get(tileData.type)(x,y);
                     }
 
                     //if the bead is a light bead, set it to illuminate after level loads
