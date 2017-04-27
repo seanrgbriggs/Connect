@@ -213,6 +213,7 @@ var G = (function(){
         rawFile.send(null);
     }
 
+    //given x and y offsets draw the corresponding part of the world
     function drawPartOfWorld(xOffset, yOffset){
         //PS.debug(worldMap[xOffset][yOffset].type);
         //reset the grid
@@ -255,7 +256,7 @@ var G = (function(){
 
                     //if the bead is a light bead, set it to illuminate after level loads
                     if(worldMap[i+xOffset][j+yOffset].type === "LIGHT"){
-                        illuminate(i, j);
+                        illuminate(i+xOffset, j+yOffset);
                     }
 
                     if(tileData && tileData.lightStrength > 0){
@@ -319,7 +320,7 @@ var G = (function(){
             var l = lights[i];
             illuminate(l.x, l.y);
         }
-        //TODO draw the right part of the world
+        //TODO draw the correct part of the world
         drawPartOfWorld(0,0);
     }
 
