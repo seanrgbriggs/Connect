@@ -273,7 +273,7 @@ var G = (function(){
             }
         }
     }
-    
+
     //given a bead location, will illuminate those around it an recursively call itself until all is lit
     function illuminate(x, y){
         //illuminate to the right
@@ -295,11 +295,7 @@ var G = (function(){
                         && tiledata.lightStrength < strength - 1) {
 
                         //set the bead light strength and change the beads color
-                        tiledata.lightStrength = strength - 1;
                         worldMap[x + i][y + j].lightStrength = strength - 1;
-                        //this is where it assigns the color
-                        PS.color(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j,
-                            0xFFFFFF - (MAXSTRENGTH - tiledata.lightStrength) * LIGHTDECREMENT);
                         illuminate( x + i, y + j);
                     }
                 }
@@ -319,11 +315,11 @@ var G = (function(){
         }
 
         //turn on all the lights
-        //TODO illuminate
         for(var i = 0; i < lights.length; i++){
             var l = lights[i];
             illuminate(l.x, l.y);
         }
+        //TODO draw the right part of the world
         drawPartOfWorld(0,0);
     }
 
@@ -504,6 +500,7 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 	//right is 1007
 	//down is 1008
 	//up is 1006
+    //TODO make the view move around and make sure that you can't go out of the world
 	switch(key){
 		case PS.KEY_ARROW_RIGHT:
 			//if not one of the rightmost levels
