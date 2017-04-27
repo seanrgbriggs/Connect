@@ -55,8 +55,7 @@ var G = (function(){
     var LIGHTDECREMENT = 0x010101;
     
     var worldMap = [];
-    var currentLevel;
-    var currentLevelNumber;
+    var lights = [];
 
     var tileColorMap = (function(){
         var map = new Map();
@@ -111,7 +110,7 @@ var G = (function(){
         map.set("PATH", voidfunc);
         map.set("VALVE", function (x, y) {
             PS.borderFade(x,y,1);
-            if(PS.border(x, y).width === 12){
+            if(!this.open){
                 this.open = true;
                 PS.border(x, y, 5);
             }else {
@@ -145,6 +144,8 @@ var G = (function(){
         map.set("WALL", voidfunc);
         map.set("PATH", voidfunc);
         map.set("VALVE", voidfunc);
+        map.set("LIGHT", voidfunc);
+        /*
         map.set("LIGHT", function(x,y){
             var data = PS.data(x,y);
 
@@ -162,6 +163,7 @@ var G = (function(){
                 // illuminate(x - LEVELOFFSET.x, y - LEVELOFFSET.y);
             }
         });
+        */
         map.set("FORK",function (x,y) { 
                 if(PS.data(x,y).hasOwnProperty('border')){
                     PS.border(x,y,PS.data(x,y).border);
@@ -169,14 +171,6 @@ var G = (function(){
             });
         return map;
     })();
-
-    //levels are 2d arrays, though js does not support 2d array, so using array of arrays
-    //examples:
-	/*
-	 var levelX = [[],[],[],[],[],[],[],[],[],[],[],[]];
-	 levelX[x][y] = {type:"PATH", lightStrength:0};
-	 */
-    //level0, or the starting level
 
     //load the world from the given file
     function loadWorldFromFile(file){
@@ -199,16 +193,17 @@ var G = (function(){
                             var spot = lines[i][j];
                             //set the lights
                             if(spot === 'L'){
-                                worldMap[j][i] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+                                worldMap[j][i] = {x:j, y:i, type: "LIGHT", lightStrength: MAXSTRENGTH};
+                                lights.push(worldMap[j][i]);
                             }
                             else if(spot === 'P'){
-                                worldMap[j][i] = {type: "PATH", lightStrength: 0};
+                                worldMap[j][i] = {x:j, y:i, type: "PATH", lightStrength: 0};
                             }
                             else if(spot === 'V'){
-                                worldMap[j][i] = {type: "VALVE", lightStrength: 0};
+                                worldMap[j][i] = {x:j, y:i, type: "VALVE", lightStrength: 0};
                             }
                             else if(spot === 'F'){
-                                worldMap[j][i] = {type: "FORK", lightStrength: 0};
+                                worldMap[j][i] = {x:j, y:i, type: "FORK", lightStrength: 0};
                             }
                         }
                     }
@@ -277,15 +272,12 @@ var G = (function(){
                 }
             }
         }
-
     }
-    //draws the specified level
-
-    //shallow copy, meaning that you can manipulate currentLevel, and the state will be saved
+    
     //given a bead location, will illuminate those around it an recursively call itself until all is lit
     function illuminate(x, y){
         //illuminate to the right
-		var litData = PS.data(LEVELOFFSET.x + x, LEVELOFFSET.y + y);
+		var litData = worldMap[x][y];
         var strength = litData.lightStrength;
 
         for(var i = -1; i <= 1; i++){
@@ -296,14 +288,15 @@ var G = (function(){
 
                 //check only the directly adjacent beads, and not diagonal ones
                 if((Math.abs(i) === 1 && Math.abs(j) === 0) || (Math.abs(i) === 0 && Math.abs(j) === 1)) {
-                    var tiledata = PS.data(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j);
-                    if ((tiledata.type === 'PATH' || (tiledata.type === 'VALVE' && tiledata.open)
+                    var tiledata = worldMap[x+i][y+j];
+                    //if there is a next spot to illuminate
+                    if (tiledata && (tiledata.type === 'PATH' || (tiledata.type === 'VALVE' && tiledata.open)
 						||(tiledata.type === 'FORK' && tiledata.isFacing(j,i)))
                         && tiledata.lightStrength < strength - 1) {
 
                         //set the bead light strength and change the beads color
                         tiledata.lightStrength = strength - 1;
-                        currentLevel[x + i][y + j].lightStrength = strength - 1;
+                        worldMap[x + i][y + j].lightStrength = strength - 1;
                         //this is where it assigns the color
                         PS.color(LEVELOFFSET.x + x + i, LEVELOFFSET.y + y + j,
                             0xFFFFFF - (MAXSTRENGTH - tiledata.lightStrength) * LIGHTDECREMENT);
@@ -315,31 +308,23 @@ var G = (function(){
     }
 
     function update(){
-        var i, j, l;
-
-        var lights = [];
-        for(i = 0 ; i < currentLevel.length; i++){
-            for(j = 0; j < currentLevel.length; j++){
-                var x,y;
-                x = LEVELOFFSET.x + i;
-                y = LEVELOFFSET.y + j;
-                if(PS.data(x,y).type === 'LIGHT'){
-                    lights.push({x:x, y:y});
-                }else if(PS.data(x,y).lightStrength){
-                    var tiledata = currentLevel[i][j];
+        //turn off all the lights
+        for(var i = 0; i < worldMap.length; i++){
+            for(var j = 0; j < worldMap[i].length; j++){
+                var tiledata = worldMap[i][j];
+                if(tiledata && tiledata.lightStrength && tiledata.type !== "LIGHT"){
                     tiledata.lightStrength = 0;
-                    PS.data(x,y,tiledata);
-                    PS.color(x,y,0x444444);
                 }
             }
         }
 
-
-        l = lights.pop();
-        while (l) {
-            illuminate(l.x - LEVELOFFSET.x, l.y - LEVELOFFSET.y);
-            l = lights.pop();
+        //turn on all the lights
+        //TODO illuminate
+        for(var i = 0; i < lights.length; i++){
+            var l = lights[i];
+            illuminate(l.x, l.y);
         }
+        drawPartOfWorld(0,0);
     }
 
     var exports = {
@@ -349,10 +334,8 @@ var G = (function(){
             MAXSTRENGTH:MAXSTRENGTH,
             LIGHTDECREMENT:LIGHTDECREMENT
         },
-        currentLevel:currentLevel,
         loadWorldFromFile:loadWorldFromFile,
-        drawPartOfWorld:drawPartOfWorld,
-        update:update,
+        drawPartOfWorld:drawPartOfWorld
     };
     return exports;
 }());
@@ -393,7 +376,6 @@ PS.init = function( system, options ) {
     PS.statusText("Touch any bead");
 
     PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
-	G.currentLevelNumber = 0;
 
 
     if ( db ) {
