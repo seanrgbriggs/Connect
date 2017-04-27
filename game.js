@@ -346,7 +346,7 @@ var G = (function(){
             illuminate(l.x, l.y);
         }
         //TODO draw the correct part of the world
-        drawPartOfWorld(0,0);
+        drawPartOfWorld(worldPos.x,worldPos.y);
     }
 
     var exports = {
