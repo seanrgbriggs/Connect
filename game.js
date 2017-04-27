@@ -365,7 +365,7 @@ PS.init = function( system, options ) {
 
     PS.gridColor(0x303030); // Perlenspiel gray
     PS.border(PS.ALL, PS.ALL, 0);
-    G.loadWorldFromFile("test.txt");
+    G.loadWorldFromFile("world.txt");
     G.drawPartOfWorld(0,0);
 
     PS.statusColor(PS.COLOR_WHITE);
