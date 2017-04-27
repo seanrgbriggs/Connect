@@ -54,6 +54,7 @@ var G = (function(){
 
     var LIGHTDECREMENT = 0x010101;
     
+    var worldPos = {x:0,y:0};
     var worldMap = [];
     var lights = [];
 
@@ -221,7 +222,31 @@ var G = (function(){
                 PS.border(LEVELOFFSET.x+i, LEVELOFFSET.y+j, 0);
                 PS.data(LEVELOFFSET.x+i, LEVELOFFSET.y+j, {type: "WALL", lightStrength: 0});
             }
+        } 
+
+        var navColors = {left:(xOffset > 0), right:(xOffset + 12 < worldMap.length), up: (yOffset > 0), down: (yOffset + 12 < worldMap.length)};
+        for(var dir in navColors){
+        	navColors[dir] = (navColors[dir])? PS.COLOR_YELLOW : PS.COLOR_WHITE;
+        	PS.debug(navColors[dir] + "\n");
         }
+        // if(xOffset > 0){
+        	PS.color(0, 7, navColors.left);
+        	PS.color(0, 8, navColors.left);
+        // }
+        // if(xOffset + 12 < worldMap.length){
+
+        	PS.color(15, 7, navColors.right);
+        	PS.color(15, 8, navColors.right);	
+        // }
+		// if(yOffset > 0){
+        	PS.color(7, 0, navColors.up);
+        	PS.color(8, 0, navColors.up);
+        // }
+        // if(yOffset + 12 < worldMap.length){
+        	PS.color(7, 15, navColors.down);
+        	PS.color(8, 15, navColors.down);
+        // }
+
 
         //draw every bead of the level
         for(var i = 0; i < LEVELSIZE; i++){
@@ -255,7 +280,7 @@ var G = (function(){
 
                     //if the bead is a light bead, set it to illuminate after level loads
                     if(worldMap[i+xOffset][j+yOffset].type === "LIGHT"){
-                        illuminate(i, j);
+                        illuminate(i + xOffset, j + yOffset);
                     }
 
                     if(tileData && tileData.lightStrength > 0){
@@ -330,6 +355,7 @@ var G = (function(){
             MAXSTRENGTH:MAXSTRENGTH,
             LIGHTDECREMENT:LIGHTDECREMENT
         },
+        worldPos:worldPos,
         loadWorldFromFile:loadWorldFromFile,
         drawPartOfWorld:drawPartOfWorld
     };
@@ -409,6 +435,17 @@ PS.touch = function( x, y, data, options ) {
     PS.audioPlay( "fx_click" );
     if(data.hasOwnProperty('onClick')){
         data.onClick(x, y);
+    }else if(PS.color(x,y) === PS.COLOR_YELLOW){
+    	if(x === 0){
+    		G.worldPos.x -= 12;
+    	}else if (x === 15){
+    		G.worldPos.x += 12;
+    	}else if (y === 0){
+    		G.worldPos.y -= 12;
+    	}else if (y === 15){
+    		G.worldPos.y += 12;
+    	}
+    		G.drawPartOfWorld(G.worldPos.x, G.worldPos.y);
     }
 
     // Add code here for mouse clicks/touches over a bead
@@ -501,20 +538,7 @@ PS.keyDown = function( key, shift, ctrl, options ) {
 	//down is 1008
 	//up is 1006
     //TODO make the view move around and make sure that you can't go out of the world
-	switch(key){
-		case PS.KEY_ARROW_RIGHT:
-			//if not one of the rightmost levels
-			break;
-		case PS.KEY_ARROW_LEFT:
-			//if not one of the leftmost levels
-			break;
-		case PS.KEY_ARROW_DOWN:
-			break;
-        case PS.KEY_ARROW_UP:
-            break;
-		default:
-			break;
-	}
+
 };
 
 // PS.keyUp ( key, shift, ctrl, options )
