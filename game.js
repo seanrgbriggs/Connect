@@ -43,6 +43,8 @@ var Utils = {
     }
 };
 
+
+
 var G = (function(){
     var GRIDSIZE = 16;
     var LEVELSIZE = 12;
@@ -52,7 +54,7 @@ var G = (function(){
 
     var LIGHTDECREMENT = 0x010101;
     
-
+    var worldMap = [];
     var currentLevel;
     var currentLevelNumber;
 
@@ -176,6 +178,116 @@ var G = (function(){
 	 levelX[x][y] = {type:"PATH", lightStrength:0};
 	 */
     //level0, or the starting level
+
+    //load the world from the given file
+    //TODO load all types of beads
+    function loadWorldFromFile(file)
+    {
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", file, false);
+        rawFile.onreadystatechange = function ()
+        {
+            if(rawFile.readyState === 4)
+            {
+                if(rawFile.status === 200 || rawFile.status == 0)
+                {
+                    var allText = rawFile.responseText;
+                    //TODO read into the array or however it is being stored
+                    var lines = allText.split(/\r?\n/);
+                    //PS.debug(lines);
+                    worldMap = [];
+                    //populate the world map
+                    //add an array for every row of the world
+                    for(var i = 0; i < lines[0].length; i++){
+                        worldMap.push([]);
+                    }
+                    //translate every letter from the text file into the world map
+                    for(var i = 0; i < lines.length; i++){
+                        for(var j = 0; j < lines[i].length; j++){
+                            var spot = lines[i][j];
+                            //set the lights
+                            if(spot === 'L'){
+                                worldMap[j][i] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
+                            }
+                            else if(spot === 'P'){
+                                worldMap[j][i] = {type: "PATH", lightStrength: 0};
+                            }
+                            else if(spot === 'V'){
+                                worldMap[j][i] = {type: "VALVE", lightStrength: 0};
+                            }
+                            else if(spot === 'F'){
+                                worldMap[j][i] = {type: "FORK", lightStrength: 0};
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        rawFile.send(null);
+    }
+
+    function drawPartOfWorld(xOffset, yOffset){
+        //PS.debug(worldMap[xOffset][yOffset].type);
+        //reset the grid
+        for(var i = 0; i < LEVELSIZE; i++){
+            for(var j = 0; j < LEVELSIZE; j++){
+                PS.border(LEVELOFFSET.x+i, LEVELOFFSET.y+j, 0);
+                PS.data(LEVELOFFSET.x+i, LEVELOFFSET.y+j, {type: "WALL", lightStrength: 0});
+            }
+        }
+
+        //draw every bead of the level
+        for(var i = 0; i < LEVELSIZE; i++){
+            for(var j = 0; j < LEVELSIZE; j++) {
+                //if there is data there then draw, the correct thing
+                //also put in the data for the data field
+
+                var x = LEVELOFFSET.x + i;
+                var y = LEVELOFFSET.y + j;
+
+                if(worldMap[i+xOffset][j+yOffset]){
+
+                    //Add the appropriate onclick functionality of the bead.
+                    //PS.debug((i+xOffset)+","+(j+yOffset));
+                    var tileData = worldMap[i+xOffset][j+yOffset];
+                    if(tileOnClickMap.has(tileData.type)){
+                        tileData['onClick']= tileOnClickMap.get(tileData.type);
+                    }
+                    PS.data(x, y, tileData);
+
+                    //Initialize each bead
+                    if(tileOnInitMap.has(tileData.type)){
+                        tileData['init']=tileOnInitMap.get(tileData.type);
+                        tileData.init(x,y);
+                    }
+
+                    //Run the appropriate draw method for each bead
+                    if(tileOnDrawMap.has(tileData.type)){
+                        tileOnDrawMap.get(tileData.type)(x,y);
+                    }
+
+                    //if the bead is a light bead, set it to illuminate after level loads
+                    if(worldMap[i+xOffset][j+yOffset].type === "LIGHT"){
+                        illuminate(i, j);
+                    }
+
+                    if(tileData && tileData.lightStrength > 0){
+                        PS.color(x, y, 0xFFFFFF - ((MAXSTRENGTH - tileData.lightStrength) * LIGHTDECREMENT));
+                    }
+                    else {
+                        PS.color(x, y, tileColorMap.get(worldMap[i+xOffset][j+yOffset].type));
+                    }
+
+                }
+                //else make it black
+                else {
+                    PS.color(x, y, tileColorMap.get("WALL"));
+                }
+            }
+        }
+
+    }
+
     var level0 = (function () {
         var level = [[], [], [], [], [], [], [], [], [], [], [], []];
         level[1][5] = {type: "LIGHT", lightStrength: MAXSTRENGTH};
@@ -630,6 +742,8 @@ var G = (function(){
         },
         currentLevel:currentLevel,
         levels:levels,
+        loadWorldFromFile:loadWorldFromFile,
+        drawPartOfWorld:drawPartOfWorld,
         update:update,
         DrawLevel:drawLevel
     };
@@ -648,7 +762,7 @@ var G = (function(){
 // [system] = an object containing engine and platform information; see documentation for details
 // [options] = an object with optional parameters; see documentation for details
 
-var db = "connect";
+var db = null;
 var finalize = function(){
 
 };
@@ -665,13 +779,15 @@ PS.init = function( system, options ) {
 
     PS.gridColor(0x303030); // Perlenspiel gray
     PS.border(PS.ALL, PS.ALL, 0);
+    G.loadWorldFromFile("test.txt");
+    G.drawPartOfWorld(0,0);
 
     PS.statusColor(PS.COLOR_WHITE);
     PS.statusText("Touch any bead");
 
     PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
 	G.currentLevelNumber = 0;
-    G.DrawLevel(G.currentLevelNumber);
+    //G.DrawLevel(G.currentLevelNumber);
 
 
     if ( db ) {
