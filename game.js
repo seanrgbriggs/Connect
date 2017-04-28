@@ -63,6 +63,8 @@ var G = (function(){
         map.set("WALL", PS.COLOR_BLACK);
         map.set("PATH", 0x444444);
         map.set("VALVE", 0x444444);
+        map.set("POWEREDVALVE", 0x444444);
+        map.set("POWERSOURCE", PS.COLOR_RED);
         map.set("LIGHT", PS.COLOR_WHITE);
         map.set("FORK", 0x444444);
         return map;
@@ -82,7 +84,20 @@ var G = (function(){
             }
             PS.borderColor(x,y,PS.DEFAULT);
         });
+        map.set("POWEREDVALVE", function (x, y) {
+            if(this.open){
+                PS.border(x, y, 5);
+            }
+            else{
+                this.open = false;
+                PS.border(x, y, 12);   //Valve Border Size
+            }
+            PS.borderColor(x,y,PS.COLOR_RED);
+        });
         map.set("LIGHT", voidfunc);
+        map.set("POWERSOURCE", function (x, y) {
+            this.powered = false;
+        });
         map.set("FORK",function (x,y) {
             PS.borderColor(x,y,0x550000);
             PS.border(x,y, {bottom:5,left:5});
@@ -120,6 +135,21 @@ var G = (function(){
             }
             update();
         });
+        /*
+        map.set("POWEREDVALVE", function (x, y) {
+            PS.borderFade(x,y,1);
+            if(!this.open){
+                this.open = true;
+                PS.border(x, y, 5);
+            }else {
+                this.open = false;
+                PS.border(x, y, 12);   //Valve Border Size
+            }
+            update();
+        });
+        */
+        map.set("POWEREDVALVE", voidfunc);
+        map.set("POWERSOURCE", voidfunc);
         map.set("LIGHT", voidfunc);
         map.set("FORK",function (x,y) {
             var border = PS.border(x,y);
@@ -135,7 +165,7 @@ var G = (function(){
 
             PS.border(x,y,border);
             update();
-        })
+        });
         return map;
     }());
 
@@ -145,31 +175,14 @@ var G = (function(){
         map.set("WALL", voidfunc);
         map.set("PATH", voidfunc);
         map.set("VALVE", voidfunc);
+        map.set("POWEREDVALVE", voidfunc);
+        map.set("POWERSOURCE", voidfunc);
         map.set("LIGHT", voidfunc);
-        /*
-        map.set("LIGHT", function(x,y){
-            var data = PS.data(x,y);
-
-            if(data.hasOwnProperty('source')){
-                var src = data.source;
-                if(strength){
-                    data.lightStrength = strength - 1; 
-                    PS.data(x,y,data);
-                }else{
-                    data.type = "PATH";
-                    data.lightStrength = 0;
-                    PS.data(x,y,data);
-                }
-             // /   PS.color(x,y,0xFFFFFF - ((MAXSTRENGTH - data.lightStrength) * LIGHTDECREMENT));
-                // illuminate(x - LEVELOFFSET.x, y - LEVELOFFSET.y);
+        map.set("FORK",function (x,y) { 
+            if(PS.data(x,y).hasOwnProperty('border')){
+                PS.border(x,y,PS.data(x,y).border);
             }
         });
-        */
-        map.set("FORK",function (x,y) { 
-                if(PS.data(x,y).hasOwnProperty('border')){
-                    PS.border(x,y,PS.data(x,y).border);
-                }
-            });
         return map;
     })();
 
@@ -202,6 +215,12 @@ var G = (function(){
                             }
                             else if(spot === 'V'){
                                 worldMap[j][i] = {x:j, y:i, type: "VALVE", lightStrength: 0};
+                            }
+                            else if(spot === 'B'){
+                                worldMap[j][i] = {x:j, y:i, type: "POWEREDVALVE", lightStrength: 0};
+                            }
+                            else if(spot === 'S'){
+                                worldMap[j][i] = {x:j, y:i, type: "POWERSOURCE", lightStrength: 0};
                             }
                             else if(spot === 'F'){
                                 worldMap[j][i] = {x:j, y:i, type: "FORK", lightStrength: 0};
@@ -312,17 +331,24 @@ var G = (function(){
 					continue;
 				}
 
-                //check only the directly adjacent beads, and not diagonal ones
+                //check only the vertically and horizontally adjacent beads, and not diagonal ones
                 if((Math.abs(i) === 1 && Math.abs(j) === 0) || (Math.abs(i) === 0 && Math.abs(j) === 1)) {
                     var tiledata = worldMap[x+i][y+j];
                     //if there is a next spot to illuminate
-                    if (tiledata && (tiledata.type === 'PATH' || (tiledata.type === 'VALVE' && tiledata.open)
+                    if (tiledata && (tiledata.type === 'PATH'
+                        ||(tiledata.type === 'VALVE' && tiledata.open)
+                        ||(tiledata.type === 'POWEREDVALVE' && tiledata.open)
 						||(tiledata.type === 'FORK' && tiledata.isFacing(j,i)))
                         && tiledata.lightStrength < strength - 1) {
 
                         //set the bead light strength and change the beads color
                         worldMap[x + i][y + j].lightStrength = strength - 1;
                         illuminate( x + i, y + j);
+                    }
+                    //if the adjacent block is a power block
+                    else if(tiledata && tiledata.type === 'POWERSOURCE'){
+                        worldMap[x+i][y+j].powered = true;
+                        worldMap[x+i][y+j+1].open = true;
                     }
                 }
             }
@@ -336,6 +362,7 @@ var G = (function(){
                 var tiledata = worldMap[i][j];
                 if(tiledata && tiledata.lightStrength && tiledata.type !== "LIGHT"){
                     tiledata.lightStrength = 0;
+                    tiledata.powered = false;
                 }
             }
         }
