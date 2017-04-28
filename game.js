@@ -53,7 +53,8 @@ var G = (function(){
     var MAXSTRENGTH = 156;
 
     var LIGHTDECREMENT = 0x010101;
-    
+    var OUTERBORDERCOLOR = 0x222222;
+
     var worldPos = {x:0,y:0};
     var worldMap = [];
     var lights = [];
@@ -225,9 +226,18 @@ var G = (function(){
             }
         } 
 
+        var borderIndices = [0,1,14,15];
+        for(var x = 0; x < 16; x++){
+        	borderIndices.forEach(function(y){PS.color(x,y,OUTERBORDERCOLOR);});
+        }
+        for(var y = 0; y < 16; y++){
+        	borderIndices.forEach(function(x){PS.color(x,y,OUTERBORDERCOLOR);});
+        }
+
+
         var navColors = {left:(xOffset > 0), right:(xOffset + 12 < worldMap.length), up: (yOffset > 0), down: (yOffset + 12 < worldMap.length)};
         for(var dir in navColors){
-        	navColors[dir] = (navColors[dir])? PS.COLOR_YELLOW : PS.COLOR_WHITE;
+        	navColors[dir] = (navColors[dir])? PS.COLOR_YELLOW : OUTERBORDERCOLOR;
         	PS.debug(navColors[dir] + "\n");
         }
         // if(xOffset > 0){
@@ -396,7 +406,9 @@ PS.init = function( system, options ) {
     G.drawPartOfWorld(0,0);
 
     PS.statusColor(PS.COLOR_WHITE);
-    PS.statusText("Touch any bead");
+    PS.statusText("Connect");
+    PS.gridColor(PS.COLOR_BLACK);
+    PS.gridShadow(true);
 
     PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
 
