@@ -52,6 +52,9 @@ var G = (function(){
 
     var MAXSTRENGTH = 156;
 
+    var TOTALPOWER = 0;
+    var MAXPOWER = 5;
+
     var LIGHTDECREMENT = 0x010101;
     var OUTERBORDERCOLOR = 0x222222;
 
@@ -364,9 +367,18 @@ var G = (function(){
         }
     }
 
+    function updateShadow(){
+    	var lightValue = 0xff * (TOTALPOWER / MAXPOWER);
+    	PS.gridShadow(true, {r:lightValue, g:lightValue, b:lightValue});
+    	lightValue /= 3;
+    	PS.gridColor({r:lightValue, g:lightValue, b:lightValue});
+    }
+
     function powerOn(x, y){
         //illuminate to the right
         var powerData = worldMap[x][y];
+        TOTALPOWER++;
+        updateShadow();
 
         for(var i = -1; i <= 1; i++){
             for(var j = -1; j <= 1; j++){
@@ -400,6 +412,9 @@ var G = (function(){
     function powerOff(x, y){
         //illuminate to the right
         var powerData = worldMap[x][y];
+        TOTALPOWER--;
+        updateShadow();
+
 
         for(var i = -1; i <= 1; i++){
             for(var j = -1; j <= 1; j++){
@@ -490,7 +505,7 @@ PS.init = function( system, options ) {
     PS.statusColor(PS.COLOR_WHITE);
     PS.statusText("Connect");
     PS.gridColor(PS.COLOR_BLACK);
-    PS.gridShadow(true);
+    PS.gridShadow(false);
 
     PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
 
