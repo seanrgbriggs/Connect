@@ -403,6 +403,9 @@ var G = (function(){
         //illuminate to the right
         var powerData = worldMap[x][y];
         TOTALPOWER--;
+        if(TOTALPOWER < 0){
+        	TOTALPOWER = 0;
+        }
         updateShadow();
 
 
