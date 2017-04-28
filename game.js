@@ -50,10 +50,7 @@ var G = (function(){
     var LEVELSIZE = 12;
     var LEVELOFFSET = {x:2,y:2};
 
-    var MAXSTRENGTH = 156;
-
-    var TOTALPOWER = 0;
-    var MAXPOWER = 5;
+    var MAXSTRENGTH = 252;
 
     var LIGHTDECREMENT = 0x010101;
     var OUTERBORDERCOLOR = 0x222222;
@@ -65,12 +62,12 @@ var G = (function(){
     var tileColorMap = (function(){
         var map = new Map();
         map.set("WALL", PS.COLOR_BLACK);
-        map.set("PATH", 0x444444);
-        map.set("VALVE", 0x444444);
-        map.set("POWEREDVALVE", 0x444444);
+        map.set("PATH", 0x333333);
+        map.set("VALVE", 0x333333);
+        map.set("POWEREDVALVE", 0x333333);
         map.set("POWERSOURCE", PS.COLOR_RED);
         map.set("LIGHT", PS.COLOR_WHITE);
-        map.set("FORK", 0x444444);
+        map.set("FORK", 0x333333);
         return map;
     }());
     var tileOnInitMap = (function () {
@@ -250,7 +247,6 @@ var G = (function(){
         var navColors = {left:(xOffset > 0), right:(xOffset + 12 < worldMap.length), up: (yOffset > 0), down: (yOffset + 12 < worldMap.length)};
         for(var dir in navColors){
         	navColors[dir] = (navColors[dir])? PS.COLOR_YELLOW : OUTERBORDERCOLOR;
-        	PS.debug(navColors[dir] + "\n");
         }
         // if(xOffset > 0){
         	PS.color(0, 7, navColors.left);
@@ -307,7 +303,12 @@ var G = (function(){
                     }
 
                     if(tileData && tileData.lightStrength > 0){
-                        PS.color(x, y, 0xFFFFFF - ((MAXSTRENGTH - tileData.lightStrength) * LIGHTDECREMENT));
+                        if(tileData.lightStrength > 109) {
+                            PS.color(x, y, 0xFFFFFF - ((MAXSTRENGTH - tileData.lightStrength) * LIGHTDECREMENT));
+                        }
+                        else{
+                            PS.color(x, y, 0x707070);
+                        }
                     }
                     else {
                         PS.color(x, y, tileColorMap.get(worldMap[i+xOffset][j+yOffset].type));
@@ -357,18 +358,9 @@ var G = (function(){
         }
     }
 
-    function updateShadow(){
-    	var lightValue = 0xff * (TOTALPOWER / MAXPOWER);
-    	PS.gridShadow(true, {r:lightValue, g:lightValue, b:lightValue});
-    	lightValue /= 3;
-    	PS.gridColor({r:lightValue, g:lightValue, b:lightValue});
-    }
-
     function powerOn(x, y){
         //illuminate to the right
         var powerData = worldMap[x][y];
-        TOTALPOWER++;
-        updateShadow();
 
         for(var i = -1; i <= 1; i++){
             for(var j = -1; j <= 1; j++){
@@ -402,8 +394,6 @@ var G = (function(){
     function powerOff(x, y){
         //illuminate to the right
         var powerData = worldMap[x][y];
-        TOTALPOWER--;
-        updateShadow();
 
 
         for(var i = -1; i <= 1; i++){
@@ -444,6 +434,19 @@ var G = (function(){
         }
         //TODO draw the correct part of the world
         drawPartOfWorld(worldPos.x,worldPos.y);
+        checkCompletion();
+    }
+
+    function checkCompletion(){
+        if(worldMap[55][31].lightStrength > 0){
+            PS.touch = function(){};
+            PS.fade(PS.ALL, PS.ALL, 120);
+            PS.gridFade(120);
+            PS.borderFade(PS.ALL, PS.ALL, 120);
+            PS.color(PS.ALL, PS.ALL, PS.COLOR_WHITE);
+            PS.gridColor(PS.COLOR_WHITE);
+            PS.borderColor(PS.ALL, PS.ALL, PS.COLOR_WHITE);
+        }
     }
 
     var exports = {
@@ -496,7 +499,7 @@ PS.init = function( system, options ) {
     PS.statusColor(PS.COLOR_WHITE);
     PS.statusText("Connect");
     PS.gridColor(PS.COLOR_BLACK);
-    PS.gridShadow(false);
+    PS.gridShadow( true, PS.COLOR_WHITE );
 
     PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
 
