@@ -107,9 +107,7 @@ var G = (function(){
     })();
     var tileOnClickMap = (function(){
         var map = new Map();
-        function voidfunc(x, y) {}
-        map.set("WALL", voidfunc);
-        map.set("PATH", voidfunc);
+        function voidfunc(x, y) {} 
         map.set("VALVE", function (x, y) {
             PS.borderFade(x,y,1);
             if(!this.open){
@@ -120,10 +118,7 @@ var G = (function(){
                 PS.border(x, y, 12);   //Valve Border Size
             }
             update();
-        });
-        map.set("POWEREDVALVE", voidfunc);
-        map.set("POWERSOURCE", voidfunc);
-        map.set("LIGHT", voidfunc);
+        }); 
         map.set("FORK",function (x,y) {
             var border = PS.border(x,y);
             var topTemp = border.top;
@@ -501,7 +496,7 @@ PS.init = function( system, options ) {
     PS.gridShadow( true, PS.COLOR_WHITE );
 
     PS.audioLoad("fx_click", { lock: true }); // load & lock click sound
-
+    PS.audioPlay("missyou", {loop:true,path:"i"});
 
     if ( db ) {
         db = PS.dbInit( db, { login : finalize } );
@@ -535,9 +530,9 @@ PS.touch = function( x, y, data, options ) {
     // The default [data] is 0, which equals PS.COLOR_BLACK
 
     // Play click sound
-    PS.audioPlay( "fx_click" );
     if(data.hasOwnProperty('onClick')){
         data.onClick(x, y);
+    PS.audioPlay( "fx_click" );
     }else if(PS.color(x,y) === PS.COLOR_YELLOW){
     	if(x === 0){
     		G.worldPos.x -= 12;
