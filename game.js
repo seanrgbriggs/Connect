@@ -136,19 +136,6 @@ var G = (function(){
             }
             update();
         });
-        /*
-        map.set("POWEREDVALVE", function (x, y) {
-            PS.borderFade(x,y,1);
-            if(!this.open){
-                this.open = true;
-                PS.border(x, y, 5);
-            }else {
-                this.open = false;
-                PS.border(x, y, 12);   //Valve Border Size
-            }
-            update();
-        });
-        */
         map.set("POWEREDVALVE", voidfunc);
         map.set("POWERSOURCE", voidfunc);
         map.set("LIGHT", voidfunc);
@@ -217,7 +204,7 @@ var G = (function(){
                             else if(spot === 'V'){
                                 worldMap[j][i] = {x:j, y:i, type: "VALVE", lightStrength: 0};
                             }
-                            else if(spot === 'B'){
+                            else if(spot === 'G'){
                                 worldMap[j][i] = {x:j, y:i, type: "POWEREDVALVE", lightStrength: 0};
                             }
                             else if(spot === 'S'){
@@ -485,7 +472,8 @@ PS.init = function( system, options ) {
     PS.gridColor(0x303030); // Perlenspiel gray
     PS.border(PS.ALL, PS.ALL, 0);
     G.loadWorldFromFile("world.txt");
-    G.drawPartOfWorld(0,0);
+    G.drawPartOfWorld(0,24);
+    G.worldPos.y = 24;
 
     PS.statusColor(PS.COLOR_WHITE);
     PS.statusText("Connect");
