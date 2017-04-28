@@ -347,12 +347,64 @@ var G = (function(){
                     }
                     //if the adjacent block is a power block
                     else if(tiledata && tiledata.type === 'POWERSOURCE'){
-                        worldMap[x+i][y+j].powered = true;
-                        worldMap[x+i][y+j+1].open = true;
+                        powerOn(x+i, y+j);
                     }
                 }
             }
         }
+    }
+
+    function powerOn(x, y){
+        //illuminate to the right
+        var powerData = worldMap[x][y];
+
+        for(var i = -1; i <= 1; i++){
+            for(var j = -1; j <= 1; j++){
+                //check only the vertically and horizontally adjacent beads, and not diagonal ones
+                if((Math.abs(i) === 1 && Math.abs(j) === 0) || (Math.abs(i) === 0 && Math.abs(j) === 1)) {
+                    var tiledata = worldMap[x+i][y+j];
+                    //if there is a next spot to illuminate
+                    //if the adjacent block is a power block
+                    if(tiledata && tiledata.type === 'POWEREDVALVE'){
+                        worldMap[x+i][y+j].open = true;
+                        //make sure everything around the opened valve is properly illuminated
+                        if(worldMap[x+i-1][y+j] && worldMap[x+i-1][y+j].lightStrength > 0){
+                            illuminate(x+i-1,y+j)
+                        }
+                        else if(worldMap[x+i+1][y+j] && worldMap[x+i+1][y+j].lightStrength > 0){
+                            illuminate(x+i+1,y+j)
+                        }
+                        else if(worldMap[x+i][y+j-1] && worldMap[x+i][y+j-1].lightStrength > 0){
+                            illuminate(x+i,y+j-1)
+                        }
+                        else if(worldMap[x+i][y+j+1] && worldMap[x+i  ][y+j+1].lightStrength > 0){
+                            illuminate(x+i,y+j+1)
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    function powerOff(x, y){
+        //illuminate to the right
+        var powerData = worldMap[x][y];
+
+        for(var i = -1; i <= 1; i++){
+            for(var j = -1; j <= 1; j++){
+                //check only the vertically and horizontally adjacent beads, and not diagonal ones
+                if((Math.abs(i) === 1 && Math.abs(j) === 0) || (Math.abs(i) === 0 && Math.abs(j) === 1)) {
+                    var tiledata = worldMap[x+i][y+j];
+                    //if there is a next spot to illuminate
+                    //if the adjacent block is a power block
+                    if(tiledata && tiledata.type === 'POWEREDVALVE'){
+                        worldMap[x+i][y+j].open = false;
+                    }
+                }
+            }
+        }
+
     }
 
     function update(){
@@ -363,6 +415,9 @@ var G = (function(){
                 if(tiledata && tiledata.lightStrength && tiledata.type !== "LIGHT"){
                     tiledata.lightStrength = 0;
                     tiledata.powered = false;
+                }
+                else if(tiledata && tiledata.type === "POWERSOURCE"){
+                    powerOff(i, j);
                 }
             }
         }
