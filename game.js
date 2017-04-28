@@ -395,7 +395,6 @@ var G = (function(){
         //illuminate to the right
         var powerData = worldMap[x][y];
 
-
         for(var i = -1; i <= 1; i++){
             for(var j = -1; j <= 1; j++){
                 //check only the vertically and horizontally adjacent beads, and not diagonal ones
@@ -434,7 +433,7 @@ var G = (function(){
         }
         //TODO draw the correct part of the world
         drawPartOfWorld(worldPos.x,worldPos.y);
-        checkCompletion();
+        setTimeout(checkCompletion, 1000);
     }
 
     function checkCompletion(){
