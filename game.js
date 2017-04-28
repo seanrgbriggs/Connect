@@ -104,22 +104,7 @@ var G = (function(){
         });
         map.set("FORK",function (x,y) {
             PS.borderColor(x,y,0x550000);
-            PS.border(x,y, {bottom:5,left:5});
-			PS.data(x,y)['isFacing'] = function (i, j) {
-				var output = true;
-                if( i > 0){
-                    output = output && (PS.border(x,y).bottom > 0);
-                }else if (i < 0){
-                    output = output && (PS.border(x,y).top > 0);
-                }
-                if( j > 0){
-                    output = output && (PS.border(x,y).right > 0);
-                }else if (j < 0){
-                    output = output && (PS.border(x,y).left > 0);
-                }
-
-                return output;
-            }
+            PS.border(x,y, {bottom:5,left:5}); 
         });
         return map;
     })();
@@ -214,7 +199,25 @@ var G = (function(){
                                 worldMap[j][i] = {x:j, y:i, type: "POWERSOURCE", lightStrength: 0};
                             }
                             else if(spot === 'F'){
-                                worldMap[j][i] = {x:j, y:i, type: "FORK", lightStrength: 0};
+                                worldMap[j][i] = {x:j, y:i, type: "FORK", lightStrength: 0, border: {left:5,bottom:5},
+                                isFacing:
+									function (i, j) {
+										var output = true;
+										var border = this.border;
+						                if( i > 0){
+						                    output = output && (border.bottom > 0);
+						                }else if (i < 0){
+						                    output = output && (border.top > 0);
+						                }
+						                if( j > 0){
+						                    output = output && (border.right > 0);
+						                }else if (j < 0){
+						                    output = output && (border.left > 0);
+						                }
+
+						                return output;
+						            }
+                            	};
                             }
                         }
                     }
